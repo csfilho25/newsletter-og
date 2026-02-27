@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O&G + Mining Intelligence Brief | 27 Fev 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0f1a;
+  --card: #111827;
+  --card-hover: #1a2332;
+  --border: #1e293b;
+  --accent: #f59e0b;
+  --accent2: #10b981;
+  --accent3: #6366f1;
+  --accent4: #ef4444;
+  --accent5: #8b5cf6;
+  --accent6: #ec4899;
+  --text: #e2e8f0;
+  --text-dim: #94a3b8;
+  --text-bright: #f8fafc;
+  --mining: #d97706;
+  --oil: #3b82f6;
+  --energy: #10b981;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; line-height:1.7; }
+.container { max-width:820px; margin:0 auto; padding:20px 16px; }
+.header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 32px;
+  text-align: center;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle at 30% 50%, rgba(245,158,11,0.06) 0%, transparent 50%),
+              radial-gradient(circle at 70% 50%, rgba(99,102,241,0.06) 0%, transparent 50%);
+}
+.header-icon { font-size: 48px; margin-bottom: 12px; position: relative; }
+.header h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.2em;
+  color: var(--text-bright);
+  letter-spacing: -0.5px;
+  position: relative;
+}
+.header-sub {
+  font-size: 1em;
+  color: var(--accent);
+  margin-top: 8px;
+  font-weight: 500;
+  position: relative;
+}
+.header-meta {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 16px;
+  font-size: 0.85em;
+  color: var(--text-dim);
+  position: relative;
+  flex-wrap: wrap;
+}
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 36px 0 20px;
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.4em;
+  color: var(--text-bright);
+}
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--border), transparent);
+}
+.exec-summary {
+  background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(99,102,241,0.05));
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+}
+.exec-summary h3 {
+  color: var(--accent);
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+}
+.exec-summary ul { list-style: none; }
+.exec-summary li {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.95em;
+}
+.exec-summary li:last-child { border: none; }
+.exec-summary li::before { content: '▸ '; color: var(--accent); font-weight: bold; }
+.numbers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.num-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+.num-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+.num-card .value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.7em;
+  font-weight: 700;
+  color: var(--accent);
+}
+.num-card .label { font-size: 0.78em; color: var(--text-dim); margin-top: 6px; }
+.num-card .change { font-family: 'JetBrains Mono', monospace; font-size: 0.8em; margin-top: 4px; }
+.up { color: #10b981; }
+.down { color: #ef4444; }
+.neutral { color: var(--text-dim); }
+.news-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
+}
+.news-card:hover { border-color: rgba(245,158,11,0.3); }
+.news-card.featured { border-left: 4px solid var(--accent); }
+.news-card.mining-card { border-left: 4px solid var(--mining); }
+.news-card.energy-card { border-left: 4px solid var(--energy); }
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  font-size: 0.7em;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.tag-ma { background: rgba(239,68,68,0.15); color: #f87171; }
+.tag-contrato { background: rgba(16,185,129,0.15); color: #34d399; }
+.tag-anp { background: rgba(59,130,246,0.15); color: #60a5fa; }
+.tag-midstream { background: rgba(139,92,246,0.15); color: #a78bfa; }
+.tag-epc { background: rgba(236,72,153,0.15); color: #f472b6; }
+.tag-corporativo { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.tag-gas { background: rgba(6,182,212,0.15); color: #22d3ee; }
+.tag-mining { background: rgba(217,119,6,0.15); color: #fbbf24; }
+.tag-litio { background: rgba(168,85,247,0.15); color: #c084fc; }
+.tag-ferro { background: rgba(239,68,68,0.15); color: #fca5a5; }
+.tag-terras-raras { background: rgba(34,211,238,0.15); color: #67e8f9; }
+.tag-energia { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+.impact {
+  font-size: 0.7em;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.impact-high { background: rgba(239,68,68,0.2); color: #f87171; }
+.impact-medium { background: rgba(245,158,11,0.2); color: #fbbf24; }
+.impact-watch { background: rgba(99,102,241,0.2); color: #818cf8; }
+.news-card h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.15em;
+  color: var(--text-bright);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+.news-card p {
+  font-size: 0.92em;
+  color: var(--text-dim);
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+.news-card .source { font-size: 0.78em; color: var(--text-dim); }
+.news-card .source a { color: var(--accent); text-decoration: none; }
+.news-card .source a:hover { text-decoration: underline; }
+.news-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  background: var(--border);
+}
+.image-banner {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+.headhunter-box {
+  background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05));
+  border: 1px solid rgba(99,102,241,0.25);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-bottom: 16px;
+}
+.headhunter-box h3 {
+  color: var(--accent3);
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1em;
+  margin-bottom: 12px;
+}
+.headhunter-box .insight {
+  background: rgba(0,0,0,0.2);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  font-size: 0.9em;
+  border-left: 3px solid var(--accent3);
+}
+.headhunter-box .insight:last-child { margin-bottom: 0; }
+.headhunter-box .insight strong { color: var(--text-bright); }
+.radar-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 14px;
+}
+.radar-card .event-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.radar-card h4 { font-size: 1.05em; color: var(--text-bright); margin-bottom: 8px; }
+.radar-card .details { font-size: 0.88em; color: var(--text-dim); margin-bottom: 12px; line-height: 1.6; }
+.radar-card .companies {
+  font-size: 0.82em;
+  padding: 10px 14px;
+  background: rgba(0,0,0,0.25);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  color: var(--text-dim);
+}
+.radar-card .companies strong { color: var(--text-bright); }
+.calendar-btn {
+  display: inline-block;
+  font-size: 0.78em;
+  padding: 6px 14px;
+  background: rgba(245,158,11,0.15);
+  color: var(--accent);
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s;
+  margin-right: 8px;
+  margin-bottom: 6px;
+}
+.calendar-btn:hover { background: rgba(245,158,11,0.25); }
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.stats-bar {
+  display: flex;
+  justify-content: space-between;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.stat-item { text-align: center; flex: 1; min-width: 90px; }
+.stat-item .stat-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.05em;
+  font-weight: 700;
+  color: var(--text-bright);
+}
+.stat-item .stat-label {
+  font-size: 0.7em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.footer {
+  text-align: center;
+  padding: 32px 20px;
+  border-top: 1px solid var(--border);
+  margin-top: 36px;
+  font-size: 0.82em;
+  color: var(--text-dim);
+}
+.footer a { color: var(--accent); text-decoration: none; }
+@media (max-width: 640px) {
+  .header h1 { font-size: 1.6em; }
+  .two-col { grid-template-columns: 1fr; }
+  .numbers-grid { grid-template-columns: repeat(2, 1fr); }
+  .header-meta { flex-direction: column; align-items: center; gap: 8px; }
+  .container { padding: 12px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-icon">⛽⛏️⚡</div>
+  <h1>O&G + Mining Intelligence Brief</h1>
+  <div class="header-sub">Oil, Gas, Energia & Mineração — Edição Completa</div>
+  <div class="header-meta">
+    <span>📅 Quinta-feira, 27 de Fevereiro de 2026</span>
+    <span>📍 Ed. #001 Completa</span>
+  </div>
+</div>
+
+<!-- EXECUTIVE SUMMARY -->
+<div class="exec-summary">
+  <h3>📋 Resumo Executivo</h3>
+  <ul>
+    <li><strong>Vale surpreende:</strong> produção recorde em 2025, ação +22% no ano. VBM (cobre/níquel) dobrou Ebitda no 4T25 para US$ 1,4 bi</li>
+    <li><strong>Mineração BR fatura R$ 298,8 bi</strong> em 2025 (+10,3%) — MG e PA = 75% da receita</li>
+    <li><strong>Projeto Vault de Trump</strong> mira lítio e terras raras do Brasil — EXIM Bank analisa 2 projetos em MG</li>
+    <li><strong>Brasil tem 23% das reservas de terras raras</strong> do mundo mas produz apenas 1% — Estratégia Nacional lançada</li>
+    <li><strong>Gerdau abre 500 vagas</strong> em Mina Miguel Burnier — projeto Itabiritos com empilhamento a seco</li>
+    <li><strong>ANM alerta barragens</strong> em MG após temporais com 30+ mortes</li>
+    <li><strong>Leilões energia em março:</strong> LRCAP (18-20/mar) e Transmissão R$ 5,1 bi (27/mar)</li>
+    <li><strong>Acordo Brasil-Índia</strong> em mineração — meta de US$ 20 bi em comércio bilateral</li>
+  </ul>
+</div>
+
+<!-- KEY NUMBERS -->
+<div class="section-divider"><span>📊</span> Key Numbers</div>
+
+<div class="numbers-grid">
+  <div class="num-card">
+    <div class="value">R$298,8bi</div>
+    <div class="label">Faturamento Mineração BR 2025</div>
+    <div class="change up">▲ 10,3% vs 2024</div>
+  </div>
+  <div class="num-card">
+    <div class="value">US$15,4bi</div>
+    <div class="label">Ebitda Vale 2025</div>
+    <div class="change up">▲ 4% YoY</div>
+  </div>
+  <div class="num-card">
+    <div class="value">+22%</div>
+    <div class="label">VALE3 em 2026</div>
+    <div class="change up">▲ 90% desde abr/25</div>
+  </div>
+  <div class="num-card">
+    <div class="value">R$7,9bi</div>
+    <div class="label">CFEM (Royalties) 2025</div>
+    <div class="change up">▲ 6,2%</div>
+  </div>
+  <div class="num-card">
+    <div class="value">US$46,1bi</div>
+    <div class="label">Export. Minerais BR</div>
+    <div class="change up">▲ 6,2%</div>
+  </div>
+  <div class="num-card">
+    <div class="value">23%</div>
+    <div class="label">Reservas Terras Raras (global)</div>
+    <div class="change neutral">Produção: ~1%</div>
+  </div>
+  <div class="num-card">
+    <div class="value">R$100bi</div>
+    <div class="label">Invest. Ibram 2025-29</div>
+    <div class="change up">Pipeline robusto</div>
+  </div>
+  <div class="num-card">
+    <div class="value">US$106/t</div>
+    <div class="label">Minério Ferro 4T25</div>
+    <div class="change up">▲ 3% vs 4T24</div>
+  </div>
+</div>
+
+<!-- ===== MINERAÇÃO ===== -->
+<div class="section-divider"><span>⛏️</span> Mineração & Metais</div>
+
+<!-- VALE RESULTADOS -->
+<div class="news-card featured">
+  <div class="card-header">
+    <div class="tags">
+      <span class="tag tag-ferro">Minério de Ferro</span>
+      <span class="tag tag-corporativo">Resultados</span>
+      <span class="tag tag-ma">M&A</span>
+    </div>
+    <span class="impact impact-high">ALTO</span>
+  </div>
+  <h3>Vale: Recorde Operacional em 2025 e Aposta Forte em Metais Básicos</h3>
+  <p>A Vale encerrou 2025 como a <strong>maior produtora global de minério de ferro</strong>, com desempenho operacional descrito como "o mais forte na história da companhia" pelo CEO Gustavo Pimenta. O Ebitda ajustado atingiu US$ 4,6 bi no 4T25 (+21% a/a) e US$ 15,5 bi no acumulado (+4%). O fluxo de caixa livre foi de US$ 5,7 bi (+3%).</p>
+  <p>O grande destaque é a <strong>Vale Base Metals (VBM)</strong>: a divisão de cobre e níquel mais que dobrou o Ebitda no trimestre para US$ 1,4 bi. O BTG projeta VBM gerando US$ 3-4 bi de Ebitda em 2026. Se avaliada a 10x EV/Ebitda, o braço valeria ~US$ 35 bi — potencial IPO/spin-off é catalisador relevante.</p>
+  <p>Para 2026: meta de produção 335-345 Mt de ferro. Projeto <strong>Serra Sul+20</strong> (Carajás) adiciona 20 Mtpa no 2º semestre com custo C1 de US$ 14/t — a operação mais barata da companhia. Capanema salta de 8 para 13 Mt. Meta de custo fixo: US$ 5,7 bi (vs US$ 6,3 bi histórico).</p>
+  <p>A ação VALE3 acumula <strong>+22% em 2026</strong> (+90% desde abr/25). BTG, Itaú BBA (alvo R$ 100), Citi e Empiricus mantêm compra. XP é neutra (alvo R$ 71). Dividend yield esperado: 7,5-9%.</p>
+  <p class="source">Fontes: <a href="https://www.seudinheiro.com" target="_blank">Seu Dinheiro</a> · <a href="https://investnews.com.br" target="_blank">InvestNews</a> · <a href="https://www.infomoney.com.br" target="_blank">InfoMoney</a> · <a href="https://br.advfn.com" target="_blank">ADVFN</a> | 12-25/fev/2026</p>
+</div>
+
+<!-- JV CANADÁ -->
+<div class="news-card mining-card">
+  <div class="card-header">
+    <div class="tags">
+      <span class="tag tag-ma">M&A</span>
+      <span class="tag tag-mining">Níquel</span>
+    </div>
+    <span class="impact impact-medium">MÉDIO</span>
+  </div>
+  <h3>Vale Fecha Joint Venture no Canadá — Níquel (US$ 200M)</h3>
+  <p>A Vale fechou JV com <strong>Exiro Minerals, Orion Resource Partners e Canada Growth Fund</strong> para os ativos de Thompson (Manitoba). Investimento de US$ 200 mi para modernizar a operação de 10-12 mil t/ano de níquel. Conclusão até fim de 2026.</p>
+  <p>Contexto estratégico: a Indonésia (50%+ da oferta global de níquel) enfrenta incerteza regulatória em licenciamentos, o que pressiona preços para cima. A Vale mantém contrato de offtake para o concentrado canadense.</p>
+  <p class="source">Fonte: <a href="https://www.seudinheiro.com" target="_blank">Seu Dinheiro</a> | 19/fev/2026</p>
+</div>
+
+<!-- FATURAMENTO SETOR -->
+<div class="news-card mining-card">
+  <div class="card-header">
+    <div class="tags">
+      <span class="tag tag-mining">Mineração</span>
+      <span class="tag tag-ferro">Ibram</span>
+    </div>
+    <span class="impact impact-high">ALTO</span>
+  </div>
+  <h3>Mineração Brasileira Fatura R$ 298,8 Bilhões em 2025 (+10,3%)</h3>
+  <p>Segundo o Ibram, o setor mineral faturou <strong>R$ 298,8 bi em 2025</strong>. Minas Gerais liderou com R$ 119,2 bi (+10,1%) e Pará com R$ 103,1 bi (+5,6%) — juntos = 75% da receita total. O minério de ferro movimentou R$ 157,2 bi (52,6%), com leve retração de 2,2%.</p>
+  <p>O superávit mineral atingiu <strong>US$ 37,6 bi (+7,6%)</strong>, equivalente a 55% do saldo da balança comercial do país. Exportações: US$ 46,1 bi (+6,2%) em 430,7 Mt (+7,1%). China absorveu 69,2%. A CFEM rendeu R$ 7,9 bi (+6,2%), com R$ 546 mi distribuídos só em fevereiro.</p>
+  <p>O Anuário Mineral 2025 (ANM) mostrou produção de R$ 220,5 bi em substâncias metálicas em 2024 — 14 metais + grafita = 82% do valor total.</p>
+  <p class="source">Fontes: <a href="https://ibram.org.br" target="_blank">Ibram</a> · <a href="https://revistaconstrua.com.br" target="_blank">Construa Negócios</a> · <a href="https://amig.org.br" target="_blank">AMIG</a> | fev/2026</p>
+</div>
+
+<!-- TERRAS RARAS & LITIO -->
+<div class="news-card mining-card">
+  <div class="card-header">
+    <div class="tags">
+      <span class="tag tag-terras-raras">Terras Raras</span>
+      <span class="tag tag-litio">Lítio</span>
+      <span class="tag tag-mining">Geopolítica</span>
+    </div>
+    <span class="impact impact-high">ALTO</span>
+  </div>
+  <h3>🌍 Projeto Vault de Trump Mira Lítio e Terras Raras do Brasil</h3>
+  <p>A reserva estratégica de minerais críticos dos EUA ("Projeto Vault", US$ 12 bi) incluirá projetos brasileiros. O EXIM Bank emitiu cartas de interesse para:</p>
+  <p>• <strong>Projeto Caldeira</strong> (Poços de Caldas/MG) — terras raras com depósitos de argilas iônicas, mesmo modelo chinês. Obteve LP ambiental em dezembro e realizou primeira produção de carbonato de ETR. Considerado o mais avançado fora da China.</p>
+  <p>• <strong>Projeto Bandeira</strong> da Lithium Ionic (MG) — lítio, até US$ 266 mi em financiamento. Foco 2026: licenciamento + estruturação financeira. Construção em 2027.</p>
+  <p>Números-chave: Brasil tem <strong>23% das reservas de terras raras</strong> (2ª maior) mas produz ~1%. A 7ª maior jazida de lítio (390 kt). A demanda por lítio pode crescer <strong>42x até 2040</strong> (IEA). O gap entre potencial e produção é a maior oportunidade do setor.</p>
+  <p class="source">Fontes: <a href="https://www.cnnbrasil.com.br" target="_blank">CNN Brasil</a> · <a href="https://abimex.ind.br" target="_blank">ABIMEX/PwC</a> · <a href="https://www.sgb.gov.br" target="_blank">SGB</a> | fev/2026</p>
+</div>
+
+<!-- ESTRATÉGIA NACIONAL -->
+<div class="news-card mining-card">
+  <div class="card-header">
+    <div class="tags">
+      <span class="tag tag-terras-raras">Minerais Críticos</span>
+      <span class="tag tag-corporativo">Política Pública</span>
+    </div>
+    <span class="impact impact-medium">MÉDIO</span>
+  </div>
+  <h3>Estratégia Nacional de Terras Raras e Investimentos de R$ 100 Bilhões</h3>
+  <p>O MME lançou em janeiro a <strong>Estratégia Nacional de Terras Raras</strong>. O Ibram estima R$ 100 bi em investimentos no setor mineral entre 2025-2029. M&A em mineração cresceu 26% ao ano entre 2021-2024.</p>
+  <p>Três projetos estratégicos somam R$ 3+ bi: <strong>Viridis</strong> e <strong>Meteorics</strong> (Poços de Caldas/MG, capital australiano) e <strong>Serra Verde</strong> em Minaçu/GO — primeira mina de ETR fora da Ásia em argila iônica, recursos de 910 Mt. BYD adquiriu 852 ha em Coronel Murta (Vale do Jequitinhonha) para lítio.</p>
+  <p>Posição global do Brasil em minerais críticos: Nióbio (~90% da produção mundial), Terras Raras (23% reservas, 2ª), Grafita (74 Mt), Lítio (7ª jazida), Manganês e Níquel (destaques).</p>
+  <p class="source">Fontes: <a href="https://revistaminerios.com.br" target="_blank">Minérios</a> · <a href="https://www.loucodepedra.com" target="_blank">Louco de Pedra</a> · <a href="https://ofator.com.br" target="_blank">O Fator</a> | jan-fev/2026</p>
+</div>
+
+<!-- GERDAU -->
+<div class="news-card mining-card">
+  <div class="card-header">
+    <div class="tags">
+      <span class="tag tag-mining">Mineração</span>
+      <span class="tag tag-corporativo">Vagas</span>
+    </div>
+    <span class="impact impact-medium">MÉDIO</span>
+  </div>
+  <h3>Gerdau Abre 500 Vagas — Projeto Itabiritos (Ouro Preto/MG)</h3>
+  <p>A Gerdau recruta para a Mina Miguel Burnier: ~<strong>500 vagas até dez/2026</strong> em liderança, operação e administrativo. Inscrições em gerdau.com.br/itabiritos.</p>
+  <p>O projeto Itabiritos é referência em mineração responsável: <strong>empilhamento a seco para 100% dos rejeitos</strong> (sem barragem), capacidade de 5,5 Mtpa para consumo próprio (Usina Ouro Branco). A mina obteve certificação <strong>IRMA 50</strong> — apenas 11 minas no mundo têm esse reconhecimento. Benefícios: plano de saúde/odonto, previdência privada, seguro de vida, transporte e alimentação.</p>
+  <p class="source">Fonte: <a href="https://www2.gerdau.com.br" target="_blank">Gerdau</a> | 06/fev/2026</p>
+</div>
+
+<!-- BRASIL-INDIA -->
+<div class="news-card mining-card">
+  <div class="card-header">
+    <div class="tags">
+      <span class="tag tag-mining">Diplomacia</span>
+      <span class="tag tag-energia">Bioenergia</span>
+    </div>
+    <span class="impact impact-watch">ACOMPANHAR</span>
+  </div>
+  <h3>Brasil-Índia: Pacto de Mineração e Meta de US$ 20 Bilhões</h3>
+  <p>Os dois países assinaram acordo de cooperação com foco em <strong>bioenergia, minerais críticos e agropecuária</strong>. A Índia busca reduzir dependência chinesa em minerais estratégicos. O Brasil participou do Future Minerals Forum 2026 na Arábia Saudita com delegação de 100+ executivos e autoridades.</p>
+  <p class="source">Fontes: <a href="https://portuguese.news-pravda.com" target="_blank">Pravda PT</a> · <a href="https://revistaminerios.com.br" target="_blank">Minérios</a> | fev/2026</p>
+</div>
+
+<!-- ALERTA ANM -->
+<div class="news-card mining-card">
+  <div class="card-header">
+    <div class="tags">
+      <span class="tag tag-mining">Segurança</span>
+      <span class="tag tag-corporativo">Regulatório</span>
+    </div>
+    <span class="impact impact-high">ALTO</span>
+  </div>
+  <h3>⚠️ ANM Emite Alerta para Barragens e Minas Após Temporais em MG</h3>
+  <p>A Agência Nacional de Mineração recomendou <strong>medidas preventivas em minas, barragens e pilhas</strong> após chuvas que causaram 30+ mortes em MG. Monitoramento reforçado. Deslizamentos e enchentes colocaram estruturas em alerta máximo.</p>
+  <p class="source">Fonte: <a href="https://www.bnamericas.com" target="_blank">BNamericas</a> | 25/fev/2026</p>
+</div>
+
+<!-- ===== OIL GAS ENERGIA ===== -->
+<div class="section-divider"><span>⛽</span> Oil, Gas & Energia</div>
+
+<!-- RADAR DE LEILÕES -->
+<div class="section-divider"><span>🎯</span> Radar de Leilões & Eventos</div>
+
+<div class="radar-card">
+  <div class="event-date">📅 13/MAR/2026</div>
+  <h4>Audiência Pública ANP — OPP Pré-sal (15 novos blocos)</h4>
+  <div class="details">Oferta Permanente de Partilha com 15 blocos no Pré-sal. Potencial de bilhões em bônus e compromissos exploratórios de longo prazo.</div>
+  <div class="companies"><strong>Posicionadas:</strong> Petrobras, Shell, TotalEnergies, ExxonMobil, QatarEnergy, Equinor, CNOOC, PRIO</div>
+  <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Audiência+ANP+OPP+Pré-sal&dates=20260313T100000/20260313T170000&details=15+blocos+Pré-sal" target="_blank" class="calendar-btn">📅 Adicionar ao Calendar</a>
+</div>
+
+<div class="radar-card">
+  <div class="event-date">📅 18/MAR/2026</div>
+  <h4>2º LRCAP — Térmicas Gás/Carvão/Hidro (330 projetos, 120 GW)</h4>
+  <div class="details">Leilão de Reserva de Capacidade — maior volume já registrado. Transmissão ao vivo pela CCEE.</div>
+  <div class="companies"><strong>Posicionadas:</strong> Petrobras (2,9 GW recontratação + 800 MW Boaventura), Eneva (Parnaíba + Celse), Âmbar/J&F, Equinor (Raia), Karpowership</div>
+  <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=2º+LRCAP+Térmicas&dates=20260318T090000/20260318T180000&details=330+projetos+120GW" target="_blank" class="calendar-btn">📅 Calendar</a>
+  <a href="https://www.ccee.org.br" target="_blank" class="calendar-btn">📺 CCEE Ao Vivo</a>
+</div>
+
+<div class="radar-card">
+  <div class="event-date">📅 20/MAR/2026</div>
+  <h4>3º LRCAP — Térmicas Óleo/Diesel/Biodiesel (38 projetos, 5,8 GW)</h4>
+  <div class="details">Complementar ao 2º LRCAP. 38 projetos, 5,8 GW de capacidade.</div>
+  <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=3º+LRCAP+Óleo&dates=20260320T090000/20260320T180000&details=38+projetos+5.8GW" target="_blank" class="calendar-btn">📅 Calendar</a>
+</div>
+
+<div class="radar-card">
+  <div class="event-date">📅 27/MAR/2026</div>
+  <h4>Leilão de Transmissão 1/2026 — R$ 5,1 bi (859 km)</h4>
+  <div class="details">ANEEL — investimento de R$ 5,1 bilhões, 859 km de novas linhas.</div>
+  <div class="companies"><strong>Posicionadas:</strong> Axia (ex-Eletrobras), ISA CTEEP, Taesa, Engie, Brookfield, Sterlite</div>
+  <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Leilão+Transmissão+1/2026&dates=20260327T090000/20260327T180000&details=R$5.1bi+859km" target="_blank" class="calendar-btn">📅 Calendar</a>
+</div>
+
+<div class="radar-card">
+  <div class="event-date">📅 ABR/2026 (a confirmar)</div>
+  <h4>Leilão de Baterias — Armazenamento de Energia (BESS)</h4>
+  <div class="details">Primeiro leilão dedicado a storage no Brasil. Marco regulatório histórico.</div>
+  <a href="https://www.epe.gov.br" target="_blank" class="calendar-btn">📋 Acompanhar EPE</a>
+</div>
+
+<!-- ===== ANÁLISE HEADHUNTER ===== -->
+<div class="section-divider"><span>🧠</span> Análise Estratégica — Visão Headhunter</div>
+
+<div class="headhunter-box">
+  <h3>⛏️ Mineração — Ondas de Contratação 2026</h3>
+  <div class="insight">
+    <strong>Vale Base Metals (VBM):</strong> Ebitda dobrando + potencial IPO = contratações agressivas em metalurgia, engenharia de minas e geologia de exploração. JV Canadá cria demanda por perfis internacionais em níquel. Divisão pode responder por 15-20% do Ebitda consolidado.
+  </div>
+  <div class="insight">
+    <strong>Terras Raras & Lítio (R$ 3+ bi):</strong> Vagas inéditas no Brasil — engenheiros de processo hidrometalúrgico, químicos de separação de ETR, geólogos de argilas iônicas. Perfis raríssimos. Experiência na China ou Austrália será premium. Lithium Ionic e Viridis iniciam recrutamento pré-operacional.
+  </div>
+  <div class="insight">
+    <strong>Gerdau Itabiritos (500 vagas):</strong> Oportunidade concreta e imediata em Ouro Preto/MG. Diferenciais: empilhamento a seco e certificação IRMA. Perfis de liderança operacional e técnicos especializados.
+  </div>
+  <div class="insight">
+    <strong>Segurança de Barragens:</strong> Alerta ANM reforça demanda permanente por engenheiros geotécnicos, especialistas em Dam Safety e profissionais de monitoramento instrumental. Mercado aquecido desde Brumadinho.
+  </div>
+</div>
+
+<div class="headhunter-box">
+  <h3>⛽ Oil, Gas & Energia — Movimentações</h3>
+  <div class="insight">
+    <strong>Pré-sal (15 blocos):</strong> Campanhas exploratórias de 3-5 anos. Alta demanda por geofísicos, engenheiros de perfuração e líderes de projeto offshore. Majors disputarão talentos brasileiros.
+  </div>
+  <div class="insight">
+    <strong>LRCAP & Transmissão (mar/26):</strong> Vencedores precisarão de equipes completas: gerentes de planta, engenheiros de processos, especialistas em turbinas a gás, gerentes de projeto EPC, engenheiros de subestações.
+  </div>
+  <div class="insight">
+    <strong>Leilão de Baterias (abr/26):</strong> Mercado completamente novo — engenheiros eletroquímicos, gerentes BESS e especialistas em grid integration. Perfis quase inexistentes no Brasil.
+  </div>
+  <div class="insight">
+    <strong>Perfil Híbrido Emergente:</strong> Convergência mineração-energia cria demanda por profissionais que transitem entre O&G e minerais críticos. Experiência em transição energética vira diferencial competitivo.
+  </div>
+</div>
+
+<!-- DADOS CHAVE -->
+<div class="section-divider"><span>🗂️</span> Dados-Chave</div>
+
+<div class="two-col">
+  <div class="news-card">
+    <h3>🏭 Produção Mineral BR</h3>
+    <p><strong>2025:</strong> R$ 298,8 bi faturamento<br>
+    <strong>2024:</strong> R$ 220,5 bi metálicas (ANM)<br>
+    Ferro: R$ 157,2 bi (52,6%)<br>
+    Superávit: US$ 37,6 bi (55% da balança BR)<br>
+    CFEM: R$ 7,9 bi em royalties</p>
+  </div>
+  <div class="news-card">
+    <h3>🔮 Minerais Críticos</h3>
+    <p><strong>Nióbio:</strong> ~90% prod. mundial<br>
+    <strong>Terras Raras:</strong> 23% reservas (2ª)<br>
+    <strong>Grafita:</strong> 74 Mt reservas<br>
+    <strong>Lítio:</strong> 7ª jazida (390 kt)<br>
+    <strong>Invest 2025-29:</strong> R$ 100 bi (Ibram)</p>
+  </div>
+</div>
+
+<div class="two-col">
+  <div class="news-card">
+    <h3>📍 Mapa da Produção</h3>
+    <p><strong>MG:</strong> R$ 119,2 bi (40%)<br>ferro, lítio, terras raras, ouro<br>
+    <strong>PA:</strong> R$ 103,1 bi (34,5%)<br>Carajás (ferro), alumínio, cobre<br>
+    <strong>GO:</strong> Serra Verde (terras raras)<br>
+    <strong>BA, SP, MT:</strong> &lt;5% cada</p>
+  </div>
+  <div class="news-card">
+    <h3>💰 Vale em Números</h3>
+    <p><strong>Ebitda 2025:</strong> US$ 15,5 bi<br>
+    <strong>VBM 4T25:</strong> US$ 1,4 bi Ebitda<br>
+    <strong>FCL 2025:</strong> US$ 5,7 bi<br>
+    <strong>Meta ferro 2026:</strong> 335-345 Mt<br>
+    <strong>Div yield est:</strong> 7,5-9%</p>
+  </div>
+</div>
+
+<!-- MARKET PULSE -->
+<div class="section-divider"><span>📈</span> Market Pulse</div>
+
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-val up">VALE3</div>
+    <div class="stat-label">+22% YTD</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val neutral">Ferro</div>
+    <div class="stat-label">US$ 106/t</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val up">Níquel</div>
+    <div class="stat-label">Alta forte</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val up">Cobre</div>
+    <div class="stat-label">Trans. energética</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val neutral">Brent</div>
+    <div class="stat-label">~US$ 73/bbl</div>
+  </div>
+</div>
+
+<!-- FONTES -->
+<div class="section-divider"><span>📚</span> Fontes</div>
+<div class="news-card">
+  <p style="font-size:0.82em; line-height:2;">
+    <strong>Mineração:</strong> Ibram · ANM · Revista Mineração · Brasil Mineral · SGB · AMIG · Notícias de Mineração Brasil<br>
+    <strong>Energia:</strong> ANP · ANEEL · CCEE · EPE · ONS · Petrobras RI<br>
+    <strong>Especializadas:</strong> EPBR · Brasil Energia · Eixos · Agência iNFRA · Click P&G · Cenário Energia · BNamericas<br>
+    <strong>Internacionais:</strong> OilPrice · Offshore Energy · Rystad Energy<br>
+    <strong>Financeiras:</strong> Valor Econômico · InfoMoney · Seu Dinheiro · InvestNews · BTG · XP · Citi · Empiricus<br>
+    <strong>Geral:</strong> CNN Brasil · Poder360 · Gazeta do Povo · PwC Brasil
+  </p>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p><strong>O&G + Mining Intelligence Brief</strong></p>
+  <p style="margin-top:6px;">Oil, Gas, Energia & Mineração — Curadoria para Headhunters</p>
+  <p style="margin-top:6px;">Edição diária seg-sex · Próxima: Segunda, 02/Mar (com resumo fim de semana)</p>
+  <p style="margin-top:14px; font-size:0.75em;">Powered by Claude AI · Dados públicos · Não constitui recomendação de investimento</p>
+</div>
+
+</div>
+</body>
+</html>
