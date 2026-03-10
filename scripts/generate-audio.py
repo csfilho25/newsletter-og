@@ -30,7 +30,12 @@ RATE = "+5%"  # Slightly faster than default
 # Elements to skip when extracting text
 SKIP_CLASSES = [
     'source', 'calendar-btn', 'back-link', 'listen-btn',
-    'subscribe-form', 'subscribe-card'
+    'subscribe-form', 'subscribe-card',
+    # Skip number indicators and stats (read only narrative text)
+    'numbers-grid', 'num-card', 'stats-bar', 'stat-item',
+    'scenario-grid', 'scenario-card', 'player-meta',
+    'section-divider', 'tags', 'impact', 'change',
+    'header-meta', 'header-icon', 'footer',
 ]
 SKIP_TAGS = ['script', 'style', 'button']
 
