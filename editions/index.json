@@ -1,0 +1,28 @@
+{
+  "editions": [
+    {
+      "number": "002",
+      "date": "2026-03-10",
+      "title": "Guerra EUA-Israel-Ira Dia 11, Brent US$120, Petrobras 4T25 R$110,6bi",
+      "file": "2026-03-10.html",
+      "highlights": [
+        "Brent ~US$120 (+51% desde 28/fev) — Ormuz bloqueado",
+        "Petrobras lucro R$110,6bi em 2025 (+199%)",
+        "LRCAP em 8 dias — 126 GW em disputa",
+        "PDAC 2026: BR apresenta US$5,5bi em minerais criticos"
+      ]
+    },
+    {
+      "number": "001",
+      "date": "2026-02-27",
+      "title": "Vale recorde operacional, Mineracao BR R$298,8bi, Projeto Vault terras raras",
+      "file": "2026-02-27.html",
+      "highlights": [
+        "Vale producao recorde 2025, VBM Ebitda dobrou",
+        "Mineracao BR fatura R$298,8bi (+10,3%)",
+        "Projeto Vault de Trump mira litio e terras raras do Brasil",
+        "Gerdau abre 500 vagas — Projeto Itabiritos"
+      ]
+    }
+  ]
+}
