@@ -1,5 +1,5 @@
 /* O&G + Mining Intelligence Brief — Audio Player */
-/* Premium player bar with voice quality indicator */
+/* Clean light theme player */
 
 /* Listen button in header */
 .listen-btn {
@@ -7,24 +7,21 @@
   align-items: center;
   gap: 10px;
   padding: 12px 24px;
-  background: linear-gradient(135deg, rgba(245,166,35,0.12), rgba(245,166,35,0.06));
-  border: 1px solid rgba(245,166,35,0.25);
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
   border-radius: var(--radius-xl);
-  color: var(--accent);
+  color: #ffffff;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.88em;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s;
   position: relative;
   margin-top: 18px;
-  letter-spacing: 0.3px;
 }
 .listen-btn:hover {
-  background: linear-gradient(135deg, rgba(245,166,35,0.2), rgba(245,166,35,0.1));
-  border-color: rgba(245,166,35,0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(245,166,35,0.15);
+  background: rgba(255,255,255,0.25);
+  border-color: rgba(255,255,255,0.5);
 }
 .listen-btn .listen-icon { font-size: 1.1em; }
 
@@ -53,9 +50,8 @@
 }
 
 .listen-btn.playing {
-  background: linear-gradient(135deg, rgba(52,211,153,0.12), rgba(52,211,153,0.06));
-  border-color: rgba(52,211,153,0.3);
-  color: #34d399;
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.5);
 }
 
 /* Floating player bar */
@@ -64,15 +60,15 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(12,18,37,0.92);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-top: 1px solid rgba(99,115,148,0.15);
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border);
   padding: 14px 24px;
   z-index: 1000;
   transform: translateY(100%);
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
+  transition: transform 0.3s ease;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
 }
 .audio-player.visible { transform: translateY(0); }
 
@@ -95,8 +91,8 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: none;
-  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  background: var(--card);
   color: var(--text-dim);
   cursor: pointer;
   display: flex;
@@ -106,21 +102,18 @@
   transition: all 0.2s;
 }
 .player-btn:hover {
-  background: rgba(255,255,255,0.1);
-  color: var(--text-bright);
+  border-color: var(--blue);
+  color: var(--blue);
 }
 .player-btn.play-btn {
   width: 44px;
   height: 44px;
-  background: linear-gradient(135deg, var(--accent), #e69500);
-  color: #0a0f1a;
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #ffffff;
   font-size: 1.1em;
-  box-shadow: 0 2px 12px rgba(245,166,35,0.25);
 }
-.player-btn.play-btn:hover {
-  box-shadow: 0 4px 16px rgba(245,166,35,0.35);
-  transform: scale(1.05);
-}
+.player-btn.play-btn:hover { background: var(--blue-dark); border-color: var(--blue-dark); }
 
 /* Progress area */
 .player-info {
@@ -130,7 +123,7 @@
 }
 .player-section-name {
   font-size: 0.78em;
-  color: var(--text);
+  color: var(--text-bright);
   margin-bottom: 6px;
   white-space: nowrap;
   overflow: hidden;
@@ -140,7 +133,7 @@
 .player-progress-bar {
   width: 100%;
   height: 4px;
-  background: rgba(255,255,255,0.08);
+  background: var(--bg-section);
   border-radius: 2px;
   overflow: hidden;
   cursor: pointer;
@@ -149,11 +142,10 @@
 .player-progress-bar:hover { height: 6px; }
 .player-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent), #fbbf24);
+  background: var(--blue);
   border-radius: 2px;
   transition: width 0.3s ease;
   width: 0%;
-  box-shadow: 0 0 8px rgba(245,166,35,0.3);
 }
 .player-meta {
   display: flex;
@@ -177,21 +169,9 @@
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
-.vq-natural {
-  background: rgba(52,211,153,0.12);
-  color: #6ee7b7;
-  border: 1px solid rgba(52,211,153,0.2);
-}
-.vq-enhanced {
-  background: rgba(96,165,250,0.12);
-  color: #93c5fd;
-  border: 1px solid rgba(96,165,250,0.2);
-}
-.vq-standard {
-  background: rgba(255,255,255,0.06);
-  color: var(--text-dim);
-  border: 1px solid rgba(255,255,255,0.08);
-}
+.vq-natural { background: #ecfdf5; color: #047857; }
+.vq-enhanced { background: #eff6ff; color: #1d4ed8; }
+.vq-standard { background: var(--bg-section); color: var(--text-dim); }
 
 /* Speed control */
 .speed-btn {
@@ -199,8 +179,8 @@
   font-size: 0.72em;
   padding: 5px 10px;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  background: var(--card);
   color: var(--text-dim);
   cursor: pointer;
   transition: all 0.2s;
@@ -208,19 +188,15 @@
   flex-shrink: 0;
   font-weight: 500;
 }
-.speed-btn:hover {
-  border-color: rgba(245,166,35,0.3);
-  color: var(--accent);
-  background: rgba(245,166,35,0.08);
-}
+.speed-btn:hover { border-color: var(--blue); color: var(--blue); }
 
 /* Close button */
 .player-close {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: none;
-  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  background: var(--card);
   color: var(--text-dim);
   cursor: pointer;
   display: flex;
@@ -230,29 +206,13 @@
   flex-shrink: 0;
   transition: all 0.2s;
 }
-.player-close:hover {
-  background: rgba(248,113,113,0.15);
-  color: #fca5a5;
-}
+.player-close:hover { border-color: #dc2626; color: #dc2626; }
 
 /* Highlight active section */
 .reading {
   position: relative;
-}
-.reading::before {
-  content: '';
-  position: absolute;
-  left: -8px;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: linear-gradient(180deg, var(--accent), transparent);
-  border-radius: 3px;
-  animation: readingPulse 2s ease-in-out infinite;
-}
-@keyframes readingPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  background: rgba(41,111,177,0.03);
+  border-radius: var(--radius-sm);
 }
 
 /* Add padding to body when player is visible */
