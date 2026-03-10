@@ -1,6 +1,6 @@
 /**
  * O&G + Mining Intelligence Brief — Audio Player
- * Text-to-Speech using Web Speech API (pt-BR)
+ * Hybrid: HTML5 Audio (MP3) + Web Speech API (TTS) with natural voice priority
  * Works on GitHub Pages — no server needed
  */
 
@@ -16,45 +16,116 @@
   let synth = window.speechSynthesis;
   let currentUtterance = null;
   let preferredVoice = null;
+  let voiceQuality = 'standard'; // 'natural', 'enhanced', 'standard'
+  let audioElement = null; // For MP3 playback
+  let useMP3 = false;
 
-  // Find best pt-BR voice
+  // ── Voice Selection ──────────────────────────────────────────────
+
+  function scoreVoice(v) {
+    let score = 0;
+    const name = v.name.toLowerCase();
+    const lang = v.lang || '';
+
+    // Must be Portuguese
+    if (!lang.startsWith('pt')) return -1;
+    if (lang === 'pt-BR') score += 50;
+
+    // Strongly prefer Natural/Neural voices (highest quality)
+    if (name.includes('natural')) score += 200;
+    if (name.includes('neural')) score += 180;
+    if (name.includes('online')) score += 100;
+
+    // Prefer known high-quality providers
+    if (name.includes('microsoft')) score += 40;
+    if (name.includes('google')) score += 30;
+
+    // Prefer female voices (generally better TTS quality for pt-BR)
+    if (name.includes('francisca')) score += 25;
+    if (name.includes('thalita')) score += 25;
+    if (name.includes('elza')) score += 20;
+    if (name.includes('fernanda')) score += 20;
+    if (name.includes('leila')) score += 15;
+
+    // Male natural voices also good
+    if (name.includes('antonio')) score += 15;
+    if (name.includes('valerio')) score += 15;
+
+    // Remote/cloud voices tend to be better
+    if (!v.localService) score += 10;
+
+    return score;
+  }
+
   function loadVoice() {
     const voices = synth.getVoices();
-    // Prefer Google or Microsoft pt-BR voices
-    preferredVoice = voices.find(v => v.lang === 'pt-BR' && v.name.includes('Google')) ||
-                     voices.find(v => v.lang === 'pt-BR' && v.name.includes('Microsoft')) ||
-                     voices.find(v => v.lang === 'pt-BR') ||
-                     voices.find(v => v.lang.startsWith('pt')) ||
-                     null;
+    if (!voices || voices.length === 0) return;
+
+    // Score and sort all Portuguese voices
+    const ptVoices = voices
+      .map(v => ({ voice: v, score: scoreVoice(v) }))
+      .filter(v => v.score > 0)
+      .sort((a, b) => b.score - a.score);
+
+    if (ptVoices.length > 0) {
+      preferredVoice = ptVoices[0].voice;
+      const name = preferredVoice.name.toLowerCase();
+
+      if (name.includes('natural') || name.includes('neural')) {
+        voiceQuality = 'natural';
+      } else if (name.includes('online') || !preferredVoice.localService) {
+        voiceQuality = 'enhanced';
+      } else {
+        voiceQuality = 'standard';
+      }
+
+      console.log('[Audio] Selected voice:', preferredVoice.name, '| Quality:', voiceQuality);
+    }
+
+    updateVoiceIndicator();
   }
 
-  // Load voices (async on some browsers)
-  if (synth.onvoiceschanged !== undefined) {
+  if (synth && synth.onvoiceschanged !== undefined) {
     synth.onvoiceschanged = loadVoice;
   }
-  loadVoice();
+  if (synth) loadVoice();
 
-  // Extract readable text from an element, skipping source links
+  // ── MP3 Audio Support ────────────────────────────────────────────
+
+  function checkMP3() {
+    const container = document.querySelector('.container');
+    if (!container) return false;
+
+    const audioUrl = container.getAttribute('data-audio') ||
+                     document.querySelector('meta[name="audio-url"]')?.content;
+
+    if (audioUrl) {
+      audioElement = new Audio(audioUrl);
+      audioElement.preload = 'metadata';
+      return true;
+    }
+    return false;
+  }
+
+  // ── Text Extraction ──────────────────────────────────────────────
+
   function extractText(el) {
     const clone = el.cloneNode(true);
-    // Remove source paragraphs and calendar buttons
-    clone.querySelectorAll('.source, .calendar-btn, .back-link, script, style').forEach(n => n.remove());
+    clone.querySelectorAll('.source, .calendar-btn, .back-link, script, style, .listen-btn').forEach(n => n.remove());
     let text = clone.textContent || '';
-    // Clean up whitespace
     text = text.replace(/\s+/g, ' ').trim();
-    // Clean common symbols that sound bad in TTS
-    text = text.replace(/[⛽⛏️⚡🌍📊📋🎯🧠📈🗂️📚🚨⚔️🔮🇧🇷💡▸▲▼●◆↗️]/g, '');
+    text = text.replace(/[⛽⛏️⚡🌍📊📋🎯🧠📈🗂️📚🚨⚔️🔮🇧🇷💡▸▲▼●◆↗️📅🛢️⚠️🏭⚖️📰🔋💰🏗️🔍👔🎓🏢⏰📌]/g, '');
     text = text.replace(/\s+/g, ' ').trim();
     return text;
   }
 
-  // Discover sections from the page
+  // ── Section Discovery ────────────────────────────────────────────
+
   function discoverSections() {
     sections = [];
     const container = document.querySelector('.container');
     if (!container) return;
 
-    // Try data-section attributes first
     const dataSections = container.querySelectorAll('[data-section]');
     if (dataSections.length > 0) {
       dataSections.forEach(el => {
@@ -67,15 +138,12 @@
           });
         }
       });
-      return;
+      if (sections.length > 0) return;
     }
 
-    // Fallback: use section dividers to split content
     const dividers = container.querySelectorAll('.section-divider');
     const allElements = Array.from(container.children);
 
-    // First: everything before the first divider (exec summary, alert, header)
-    let preContent = [];
     for (let el of allElements) {
       if (el.classList.contains('section-divider')) break;
       if (el.classList.contains('header') || el.classList.contains('exec-summary') || el.classList.contains('alert-banner')) {
@@ -88,8 +156,7 @@
       }
     }
 
-    // Then: each section divider groups the content until the next divider
-    dividers.forEach((divider, i) => {
+    dividers.forEach((divider) => {
       const sectionName = divider.textContent.replace(/\s+/g, ' ').trim();
       let content = [];
       let next = divider.nextElementSibling;
@@ -111,7 +178,6 @@
       }
     });
 
-    // Footer
     const footer = container.querySelector('.footer');
     if (footer) {
       sections.push({
@@ -122,9 +188,9 @@
     }
   }
 
-  // Create the player UI
+  // ── Player UI ────────────────────────────────────────────────────
+
   function createPlayer() {
-    // Listen button (inserted after the header)
     const header = document.querySelector('.header');
     if (header) {
       const btn = document.createElement('button');
@@ -135,7 +201,6 @@
       header.appendChild(btn);
     }
 
-    // Floating player bar
     const player = document.createElement('div');
     player.className = 'audio-player';
     player.id = 'audio-player';
@@ -151,7 +216,10 @@
           <div class="player-progress-bar" id="player-progress-bar">
             <div class="player-progress-fill" id="player-progress-fill"></div>
           </div>
-          <div class="player-time" id="player-time">0 / 0 secoes</div>
+          <div class="player-meta">
+            <span class="player-time" id="player-time">0 / 0 secoes</span>
+            <span class="voice-quality" id="voice-quality"></span>
+          </div>
         </div>
         <button class="speed-btn" id="speed-btn" title="Velocidade">1x</button>
         <button class="player-close" id="player-close" title="Fechar">&times;</button>
@@ -159,7 +227,6 @@
     `;
     document.body.appendChild(player);
 
-    // Event listeners
     document.getElementById('player-play').addEventListener('click', togglePlay);
     document.getElementById('player-prev').addEventListener('click', prevSection);
     document.getElementById('player-next').addEventListener('click', nextSection);
@@ -168,12 +235,32 @@
     document.getElementById('player-progress-bar').addEventListener('click', onProgressClick);
   }
 
+  function updateVoiceIndicator() {
+    const el = document.getElementById('voice-quality');
+    if (!el) return;
+
+    if (useMP3) {
+      el.textContent = 'MP3';
+      el.className = 'voice-quality vq-natural';
+    } else if (voiceQuality === 'natural') {
+      el.textContent = 'Voz Natural';
+      el.className = 'voice-quality vq-natural';
+    } else if (voiceQuality === 'enhanced') {
+      el.textContent = 'Voz Online';
+      el.className = 'voice-quality vq-enhanced';
+    } else {
+      el.textContent = 'TTS';
+      el.className = 'voice-quality vq-standard';
+    }
+  }
+
   function showPlayer() {
     const player = document.getElementById('audio-player');
     if (player) {
       player.classList.add('visible');
       document.body.classList.add('player-active');
     }
+    updateVoiceIndicator();
   }
 
   function hidePlayer() {
@@ -197,7 +284,7 @@
     if (listenBtn) {
       listenBtn.classList.toggle('playing', isPlaying);
       listenBtn.innerHTML = isPlaying
-        ? '<span class="listen-icon">&#10074;&#10074;</span> Pausar'
+        ? '<span class="listen-icon eq-icon"><span></span><span></span><span></span></span> Pausar'
         : '<span class="listen-icon">&#9654;</span> Ouvir esta edicao';
     }
     if (sectionName && sections.length > 0) {
@@ -211,11 +298,9 @@
       timeDisplay.textContent = `${currentSectionIdx + 1} / ${sections.length} secoes`;
     }
 
-    // Highlight current section
     document.querySelectorAll('.reading').forEach(el => el.classList.remove('reading'));
     if (isPlaying && sections[currentSectionIdx]?.element) {
       sections[currentSectionIdx].element.classList.add('reading');
-      // Scroll into view smoothly
       sections[currentSectionIdx].element.scrollIntoView({
         behavior: 'smooth',
         block: 'center'
@@ -223,9 +308,10 @@
     }
   }
 
+  // ── TTS Playback ─────────────────────────────────────────────────
+
   function speakSection(idx) {
     if (idx >= sections.length) {
-      // Done
       isPlaying = false;
       isPaused = false;
       currentSectionIdx = 0;
@@ -237,14 +323,12 @@
     currentSectionIdx = idx;
 
     const text = sections[idx].text;
-    // Split long texts into chunks (speechSynthesis has ~300 char limit on some browsers)
-    const chunks = splitText(text, 200);
+    const chunks = splitText(text, 250);
     let chunkIdx = 0;
 
     function speakChunk() {
       if (chunkIdx >= chunks.length || !isPlaying) {
         if (isPlaying && chunkIdx >= chunks.length) {
-          // Move to next section
           speakSection(idx + 1);
         }
         return;
@@ -253,6 +337,7 @@
       const utt = new SpeechSynthesisUtterance(chunks[chunkIdx]);
       utt.lang = 'pt-BR';
       utt.rate = SPEEDS[currentSpeedIdx];
+      utt.pitch = 1.0;
       if (preferredVoice) utt.voice = preferredVoice;
 
       utt.onend = function() {
@@ -292,9 +377,10 @@
     return chunks;
   }
 
+  // ── Controls ─────────────────────────────────────────────────────
+
   function togglePlay() {
     if (!isPlaying) {
-      // Start
       discoverSections();
       if (sections.length === 0) return;
       isPlaying = true;
@@ -302,12 +388,10 @@
       showPlayer();
       speakSection(currentSectionIdx);
     } else if (isPaused) {
-      // Resume
       isPaused = false;
       synth.resume();
       updateUI();
     } else {
-      // Pause
       isPaused = true;
       synth.pause();
       updateUI();
@@ -333,7 +417,6 @@
     const speedBtn = document.getElementById('speed-btn');
     if (speedBtn) speedBtn.textContent = SPEEDS[currentSpeedIdx] + 'x';
 
-    // If currently speaking, restart current section with new speed
     if (isPlaying && !isPaused) {
       synth.cancel();
       speakSection(currentSectionIdx);
@@ -360,44 +443,45 @@
     }
   }
 
-  // Cleanup on page unload
+  // ── Keep-alive & Cleanup ─────────────────────────────────────────
+
   window.addEventListener('beforeunload', function() {
-    synth.cancel();
+    if (synth) synth.cancel();
   });
 
-  // Chrome bug workaround: speech synthesis stops after ~15s if not "poked"
-  // This interval keeps it alive
   let keepAliveInterval;
   function startKeepAlive() {
     keepAliveInterval = setInterval(function() {
-      if (synth.speaking && !synth.paused) {
+      if (synth && synth.speaking && !synth.paused) {
         synth.pause();
         synth.resume();
       }
     }, 10000);
   }
 
-  function stopKeepAlive() {
-    clearInterval(keepAliveInterval);
+  // ── Init ─────────────────────────────────────────────────────────
+
+  function init() {
+    if (!('speechSynthesis' in window)) {
+      console.warn('[Audio] Web Speech API not supported.');
+      return;
+    }
+
+    useMP3 = checkMP3();
+    createPlayer();
+    startKeepAlive();
+
+    // Auto-start if URL has #listen
+    if (window.location.hash === '#listen') {
+      setTimeout(function() {
+        togglePlay();
+      }, 1000);
+    }
   }
 
-  // Override togglePlay to manage keepalive
-  const origToggle = togglePlay;
-
-  // Initialize on DOM ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
-  }
-
-  function init() {
-    // Check for Web Speech API support
-    if (!('speechSynthesis' in window)) {
-      console.warn('Web Speech API not supported in this browser.');
-      return;
-    }
-    createPlayer();
-    startKeepAlive();
   }
 })();
