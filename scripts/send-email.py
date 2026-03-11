@@ -9,15 +9,25 @@ import sys
 import os
 import re
 import smtplib
+import time
+import subprocess
 from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-try:
-    from bs4 import BeautifulSoup
-except ImportError:
-    print("Install beautifulsoup4: pip install beautifulsoup4")
-    sys.exit(1)
+# Auto-install dependencies if missing
+def ensure_dependencies():
+    """Install required packages if not available."""
+    try:
+        from bs4 import BeautifulSoup
+        return BeautifulSoup
+    except ImportError:
+        print("beautifulsoup4 not found. Installing...")
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'beautifulsoup4', '-q'])
+        from bs4 import BeautifulSoup
+        return BeautifulSoup
+
+BeautifulSoup = ensure_dependencies()
 
 # Config
 GMAIL_USER = "carlos.alberto.dias.souza@gmail.com"
@@ -257,25 +267,34 @@ def send_email(html_path):
     msg.attach(MIMEText(plain_text, 'plain', 'utf-8'))
     msg.attach(MIMEText(email_html, 'html', 'utf-8'))
 
-    # Send
+    # Send with retry logic
     print(f"Sending to: {RECIPIENT}")
     print(f"Subject: {subject}")
 
-    try:
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-            server.ehlo()
-            server.starttls()
-            server.ehlo()
-            server.login(GMAIL_USER, app_password)
-            server.send_message(msg)
-        print("Email sent successfully!")
-    except smtplib.SMTPAuthenticationError:
-        print("ERROR: Authentication failed. Check your GMAIL_APP_PASSWORD.")
-        print("Get a new App Password at: https://myaccount.google.com/apppasswords")
-        sys.exit(1)
-    except Exception as e:
-        print(f"ERROR sending email: {e}")
-        sys.exit(1)
+    max_retries = 4
+    for attempt in range(1, max_retries + 1):
+        try:
+            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=30) as server:
+                server.ehlo()
+                server.starttls()
+                server.ehlo()
+                server.login(GMAIL_USER, app_password)
+                server.send_message(msg)
+            print(f"Email sent successfully! (attempt {attempt})")
+            return
+        except smtplib.SMTPAuthenticationError:
+            print("ERROR: Authentication failed. Check your GMAIL_APP_PASSWORD.")
+            print("Get a new App Password at: https://myaccount.google.com/apppasswords")
+            sys.exit(1)
+        except (smtplib.SMTPException, ConnectionError, OSError, TimeoutError) as e:
+            wait = 2 ** attempt  # 2s, 4s, 8s, 16s
+            if attempt < max_retries:
+                print(f"Attempt {attempt}/{max_retries} failed: {e}")
+                print(f"Retrying in {wait}s...")
+                time.sleep(wait)
+            else:
+                print(f"ERROR: All {max_retries} attempts failed. Last error: {e}")
+                sys.exit(1)
 
 
 def main():

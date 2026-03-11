@@ -9,19 +9,35 @@ import asyncio
 import sys
 import os
 import re
+import subprocess
 from pathlib import Path
 
-try:
-    import edge_tts
-except ImportError:
-    print("Install edge-tts: pip install edge-tts")
-    sys.exit(1)
 
-try:
-    from bs4 import BeautifulSoup
-except ImportError:
-    # Fallback: use regex-based extraction
-    BeautifulSoup = None
+def ensure_dependencies():
+    """Auto-install required packages if missing."""
+    missing = []
+    try:
+        import edge_tts
+    except ImportError:
+        missing.append('edge-tts')
+    try:
+        from bs4 import BeautifulSoup
+    except ImportError:
+        missing.append('beautifulsoup4')
+
+    if missing:
+        print(f"Installing missing packages: {', '.join(missing)}...")
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install'] + missing + ['-q'])
+
+    import edge_tts as _edge_tts
+    try:
+        from bs4 import BeautifulSoup as _BS
+    except ImportError:
+        _BS = None
+    return _edge_tts, _BS
+
+
+edge_tts, BeautifulSoup = ensure_dependencies()
 
 # Voice config
 VOICE = "pt-BR-FranciscaNeural"
