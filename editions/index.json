@@ -1,6 +1,20 @@
 {
   "editions": [
     {
+      "number": "003",
+      "date": "2026-03-11",
+      "title": "Brent crash -11% para US$88, Guerra Dia 12, PETR4 maxima historica, Brava recorde",
+      "file": "2026-03-11.html",
+      "highlights": [
+        "Brent crash -11,28% de US$120 para US$88 — maior queda desde 2020",
+        "Guerra Dia 12: Israel destroi 30 depositos, Franca envia Marinha",
+        "PETR4 maxima historica R$44,27 — acoes +40% em 2026",
+        "Brava producao recorde 79,5 kboed, PRIO meta 187 kbpd",
+        "NTS/TAG disputa tarifaria R$8bi com ANP",
+        "PDAC: Acordos EUA US$565mi + India US$20bi minerais criticos"
+      ]
+    },
+    {
       "number": "002",
       "date": "2026-03-10",
       "title": "Guerra EUA-Israel-Ira Dia 11, Brent US$120, Petrobras 4T25 R$110,6bi",
