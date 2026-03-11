@@ -98,16 +98,42 @@ def extract_text(html_path):
     return extract_text_regex(html_path)
 
 
+def add_natural_pauses(text):
+    """Add natural pauses at sentence boundaries for better speech flow.
+
+    The TTS engine already handles commas and minor punctuation naturally.
+    We only add explicit pauses at:
+    - Period (.) / Exclamation (!) / Question (?): 300ms (sentence break)
+    - Em dash (—): replaced with comma for natural TTS pause
+    """
+    # Em dash — replace with comma so TTS adds a natural breath pause
+    text = text.replace(' — ', ', ')
+    text = text.replace('—', ', ')
+
+    # Sentence endings: add a short explicit pause for clearer separation
+    text = re.sub(r'([.!?])\s+', r'\1 <break time="300ms"/> ', text)
+
+    # Clean up multiple consecutive breaks
+    text = re.sub(r'(<break[^/]*/>\s*){2,}', lambda m: m.group(0).split('/>')[0] + '/> ', text)
+
+    # Clean extra spaces
+    text = re.sub(r'\s+', ' ', text).strip()
+
+    return text
+
+
 async def generate_audio(text, output_path, voice=VOICE, rate=RATE):
-    """Generate MP3 from text using edge-tts."""
-    # Add intro
-    intro = "Voce esta ouvindo o O and G plus Mining Intelligence Brief. "
-    full_text = intro + text
+    """Generate MP3 from text using edge-tts with natural pauses."""
+    # Add natural pauses to the text
+    text_with_pauses = add_natural_pauses(text)
 
-    # Add closing
-    full_text += " Fim da edicao. Obrigado por ouvir."
+    # Add intro with pause
+    intro = 'Você está ouvindo o O and G plus Mining Intelligence Brief... '
+    closing = ' ... Fim da edição. Obrigado por ouvir.'
 
-    print(f"Generating audio ({len(full_text)} chars)...")
+    full_text = intro + text_with_pauses + closing
+
+    print(f"Generating audio ({len(text)} chars, with natural pauses)...")
     print(f"Voice: {voice}")
     print(f"Output: {output_path}")
 
