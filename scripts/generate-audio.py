@@ -20,22 +20,26 @@ except ImportError:
 try:
     from bs4 import BeautifulSoup
 except ImportError:
-    # Fallback: use regex-based extraction
     BeautifulSoup = None
 
 # Voice config
 VOICE = "pt-BR-FranciscaNeural"
 RATE = "-3%"  # Slightly slower for natural pacing
 
-# Elements to skip when extracting text
+# Elements to SKIP in audio (not narrative text)
 SKIP_CLASSES = [
+    # Navigation and UI
     'source', 'calendar-btn', 'back-link', 'listen-btn',
     'subscribe-form', 'subscribe-card',
-    # Skip number indicators and stats (read only narrative text)
+    # Number indicators and stats
     'numbers-grid', 'num-card', 'stats-bar', 'stat-item',
     'scenario-grid', 'scenario-card', 'player-meta',
     'section-divider', 'tags', 'impact', 'change',
     'header-meta', 'header-icon', 'footer',
+    # Executive summary (bullet points sound bad in audio)
+    'exec-summary',
+    # Sources/references (irrelevant in audio)
+    'source',
 ]
 SKIP_TAGS = ['script', 'style', 'button']
 
@@ -49,9 +53,99 @@ SYMBOLS_RE = re.compile(
     r'\U0001F3E2\u23F0\U0001F4CC\u26FD\u26CF\U0001F525]+', re.UNICODE
 )
 
+# ============================================================
+# Abbreviation expansion for natural speech
+# ============================================================
+ABBREVIATIONS = [
+    # Months (standalone or after day numbers)
+    (r'\b(\d{1,2})\s*/\s*mar\b', r'\1 de março'),
+    (r'\b(\d{1,2})\s*/\s*fev\b', r'\1 de fevereiro'),
+    (r'\b(\d{1,2})\s*/\s*jan\b', r'\1 de janeiro'),
+    (r'\b(\d{1,2})\s*/\s*abr\b', r'\1 de abril'),
+    (r'\b(\d{1,2})\s*/\s*mai\b', r'\1 de maio'),
+    (r'\b(\d{1,2})\s*/\s*jun\b', r'\1 de junho'),
+    (r'\b(\d{1,2})\s*/\s*jul\b', r'\1 de julho'),
+    (r'\b(\d{1,2})\s*/\s*ago\b', r'\1 de agosto'),
+    (r'\b(\d{1,2})\s*/\s*set\b', r'\1 de setembro'),
+    (r'\b(\d{1,2})\s*/\s*out\b', r'\1 de outubro'),
+    (r'\b(\d{1,2})\s*/\s*nov\b', r'\1 de novembro'),
+    (r'\b(\d{1,2})\s*/\s*dez\b', r'\1 de dezembro'),
+    # "10 Mar 2026" format
+    (r'\b(\d{1,2})\s+[Mm]ar\s+(\d{4})', r'\1 de março de \2'),
+    (r'\b(\d{1,2})\s+[Ff]ev\s+(\d{4})', r'\1 de fevereiro de \2'),
+    (r'\b(\d{1,2})\s+[Jj]an\s+(\d{4})', r'\1 de janeiro de \2'),
+    (r'\b(\d{1,2})\s+[Aa]br\s+(\d{4})', r'\1 de abril de \2'),
+    (r'\b(\d{1,2})\s+[Mm]ai\s+(\d{4})', r'\1 de maio de \2'),
+    (r'\b(\d{1,2})\s+[Jj]un\s+(\d{4})', r'\1 de junho de \2'),
+    (r'\b(\d{1,2})\s+[Jj]ul\s+(\d{4})', r'\1 de julho de \2'),
+    (r'\b(\d{1,2})\s+[Aa]go\s+(\d{4})', r'\1 de agosto de \2'),
+    (r'\b(\d{1,2})\s+[Ss]et\s+(\d{4})', r'\1 de setembro de \2'),
+    (r'\b(\d{1,2})\s+[Oo]ut\s+(\d{4})', r'\1 de outubro de \2'),
+    (r'\b(\d{1,2})\s+[Nn]ov\s+(\d{4})', r'\1 de novembro de \2'),
+    (r'\b(\d{1,2})\s+[Dd]ez\s+(\d{4})', r'\1 de dezembro de \2'),
+
+    # Units - oil & gas
+    (r'Mb/d', 'milhões de barris por dia'),
+    (r'Mboe/d', 'milhões de barris de óleo equivalente por dia'),
+    (r'bbl', 'barris'),
+    (r'b/d', 'barris por dia'),
+
+    # Units - energy
+    (r'\bGW\b', 'gigawatts'),
+    (r'\bMW\b', 'megawatts'),
+    (r'\bTWh\b', 'terawatt-hora'),
+    (r'\bGWh\b', 'gigawatt-hora'),
+    (r'\bMWh\b', 'megawatt-hora'),
+
+    # Currency and numbers
+    (r'US\$\s*', 'dólares '),
+    (r'R\$\s*', 'reais '),
+    (r'\bbi\b', 'bilhões'),
+    (r'\bmi\b', 'milhões'),
+    (r'\btri\b', 'trilhões'),
+
+    # Percentages - ensure TTS reads "por cento"
+    (r'(\d)\s*%', r'\1 por cento'),
+    (r'(\d),(\d+)\s*pp\b', r'\1 vírgula \2 pontos percentuais'),
+    (r'(\d)\s*pp\b', r'\1 pontos percentuais'),
+
+    # Common O&G abbreviations
+    (r'\bANP\b', 'A.N.P.'),
+    (r'\bANM\b', 'A.N.M.'),
+    (r'\bOPEP\+?', 'OPEP'),
+    (r'\bFPSO\b', 'F.P.S.O.'),
+    (r'\bAIE\b', 'A.I.É.'),
+    (r'\bIBP\b', 'I.B.P.'),
+    (r'\bIPCA\b', 'I.P.C.A.'),
+    (r'\bEBITDA\b', 'EBITDA'),
+    (r'\bLRCAP\b', 'Leilão de Reserva de Capacidade'),
+    (r'\bPDAC\b', 'P.D.A.C.'),
+    (r'\bEPC\b', 'E.P.C.'),
+    (r'\bP&I\b', 'P. and I.'),
+    (r'\bG7\b', 'G. sete'),
+    (r'\bEAU\b', 'Emirados Árabes'),
+
+    # Company tickers
+    (r'\bPETR4\b', 'Petrobras preferencial'),
+    (r'\bPETR3\b', 'Petrobras ordinária'),
+    (r'\bPRIO3\b', 'PRIO'),
+    (r'\bBRAV3\b', 'Brava Energia'),
+    (r'\bVALE3\b', 'Vale'),
+
+    # Directions / variations
+    (r'\ba/a\b', 'ano a ano'),
+    (r'\bvs\.\s*', 'versus '),
+    (r'\b4T25\b', 'quarto trimestre de 2025'),
+    (r'\b3T25\b', 'terceiro trimestre de 2025'),
+    (r'\b2T25\b', 'segundo trimestre de 2025'),
+    (r'\b1T25\b', 'primeiro trimestre de 2025'),
+    (r'\b4T24\b', 'quarto trimestre de 2024'),
+    (r'\b1T26\b', 'primeiro trimestre de 2026'),
+]
+
 
 def extract_text_bs4(html_path):
-    """Extract readable text using BeautifulSoup."""
+    """Extract readable text using BeautifulSoup — only narrative paragraphs."""
     with open(html_path, 'r', encoding='utf-8') as f:
         soup = BeautifulSoup(f.read(), 'html.parser')
 
@@ -67,10 +161,26 @@ def extract_text_bs4(html_path):
         for el in container.find_all(tag):
             el.decompose()
 
-    text = container.get_text(separator=' ')
-    text = SYMBOLS_RE.sub('', text)
-    text = re.sub(r'\s+', ' ', text).strip()
-    return text
+    # Remove all source paragraphs (class="source" or starting with "Fontes:")
+    for p in container.find_all('p'):
+        p_class = p.get('class', [])
+        if 'source' in p_class:
+            p.decompose()
+            continue
+        text = p.get_text(strip=True)
+        if text.startswith('Fontes:') or text.startswith('Fonte:'):
+            p.decompose()
+
+    # Extract text with newlines between paragraphs for natural pacing
+    paragraphs = []
+    for el in container.find_all(['p', 'h2', 'h3']):
+        text = el.get_text(strip=True)
+        text = SYMBOLS_RE.sub('', text)
+        text = text.strip()
+        if len(text) > 10:  # Skip very short fragments
+            paragraphs.append(text)
+
+    return '\n\n'.join(paragraphs)
 
 
 def extract_text_regex(html_path):
@@ -78,14 +188,10 @@ def extract_text_regex(html_path):
     with open(html_path, 'r', encoding='utf-8') as f:
         html = f.read()
 
-    # Remove script/style tags
     html = re.sub(r'<(script|style)[^>]*>.*?</\1>', '', html, flags=re.DOTALL | re.IGNORECASE)
-    # Remove HTML tags
     text = re.sub(r'<[^>]+>', ' ', html)
-    # Decode entities
     text = text.replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>')
     text = text.replace('&#8592;', '').replace('&times;', '')
-    # Clean symbols
     text = SYMBOLS_RE.sub('', text)
     text = re.sub(r'\s+', ' ', text).strip()
     return text
@@ -98,28 +204,49 @@ def extract_text(html_path):
     return extract_text_regex(html_path)
 
 
-def clean_text_for_speech(text):
-    """Clean and prepare text for natural TTS reading.
+def expand_abbreviations(text):
+    """Expand abbreviations and units so TTS reads them naturally."""
+    for pattern, replacement in ABBREVIATIONS:
+        text = re.sub(pattern, replacement, text, flags=re.IGNORECASE if pattern[0] != '\\' else 0)
+    return text
 
-    No SSML tags — relies on punctuation for natural pacing.
-    """
-    # Em dash — replace with period for a natural sentence break
+
+def clean_text_for_speech(text):
+    """Clean and prepare text for natural TTS reading."""
+    # Em dash — replace with period for sentence break
     text = text.replace(' — ', '. ')
     text = text.replace('—', '. ')
 
-    # Remove any leftover HTML entities
-    text = text.replace('&amp;', 'e')
+    # Remove HTML entities
+    text = text.replace('&amp;', ' e ')
     text = text.replace('&middot;', '.')
     text = text.replace('&nbsp;', ' ')
 
-    # Remove URLs (TTS reads them character by character)
+    # Remove URLs
     text = re.sub(r'https?://\S+', '', text)
 
-    # Remove parenthetical abbreviations that sound bad spoken
+    # Remove email addresses
+    text = re.sub(r'\S+@\S+\.\S+', '', text)
+
+    # Remove standalone parenthetical abbreviations like (ANP)
     text = re.sub(r'\(([A-Z]{2,})\)', r'\1', text)
 
-    # Clean up multiple periods/dots
+    # Expand abbreviations BEFORE other cleanup
+    text = expand_abbreviations(text)
+
+    # Ensure paragraph breaks become sentence breaks
+    text = re.sub(r'\n\n+', '. ', text)
+    text = re.sub(r'\n', '. ', text)
+
+    # Clean up multiple periods
+    text = re.sub(r'\.[\s.]+\.', '. ', text)
     text = re.sub(r'\.{2,}', '.', text)
+
+    # Remove content between [ ] (often references)
+    text = re.sub(r'\[[^\]]*\]', '', text)
+
+    # Clean "Fontes:" lines that might have slipped through
+    text = re.sub(r'Fontes?:.*?(?=\.|$)', '', text)
 
     # Clean multiple spaces
     text = re.sub(r'\s+', ' ', text).strip()
@@ -129,16 +256,14 @@ def clean_text_for_speech(text):
 
 async def generate_audio(text, output_path, voice=VOICE, rate=RATE):
     """Generate MP3 from text using edge-tts (plain text, no SSML)."""
-    # Clean text for speech
     clean_text = clean_text_for_speech(text)
 
-    # Add intro and closing (using periods for natural pauses)
     intro = 'Você está ouvindo o O and G plus Mining Intelligence Brief. '
     closing = '. Fim da edição. Obrigado por ouvir.'
 
     full_text = intro + clean_text + closing
 
-    print(f"Generating audio ({len(text)} chars, with natural pauses)...")
+    print(f"Generating audio ({len(clean_text)} chars after cleanup)...")
     print(f"Voice: {voice}")
     print(f"Output: {output_path}")
 
@@ -160,7 +285,6 @@ def main():
         print(f"File not found: {html_path}")
         sys.exit(1)
 
-    # Default output: same name but .mp3
     if len(sys.argv) > 2:
         output_path = Path(sys.argv[2])
     else:
