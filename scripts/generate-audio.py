@@ -25,7 +25,7 @@ except ImportError:
 
 # Voice config
 VOICE = "pt-BR-FranciscaNeural"
-RATE = "+5%"  # Slightly faster than default
+RATE = "-3%"  # Slightly slower for natural pacing
 
 # Elements to skip when extracting text
 SKIP_CLASSES = [
@@ -98,40 +98,45 @@ def extract_text(html_path):
     return extract_text_regex(html_path)
 
 
-def add_natural_pauses(text):
-    """Add natural pauses at sentence boundaries for better speech flow.
+def clean_text_for_speech(text):
+    """Clean and prepare text for natural TTS reading.
 
-    The TTS engine already handles commas and minor punctuation naturally.
-    We only add explicit pauses at:
-    - Period (.) / Exclamation (!) / Question (?): 300ms (sentence break)
-    - Em dash (—): replaced with comma for natural TTS pause
+    No SSML tags — relies on punctuation for natural pacing.
     """
-    # Em dash — replace with comma so TTS adds a natural breath pause
-    text = text.replace(' — ', ', ')
-    text = text.replace('—', ', ')
+    # Em dash — replace with period for a natural sentence break
+    text = text.replace(' — ', '. ')
+    text = text.replace('—', '. ')
 
-    # Sentence endings: add a short explicit pause for clearer separation
-    text = re.sub(r'([.!?])\s+', r'\1 <break time="300ms"/> ', text)
+    # Remove any leftover HTML entities
+    text = text.replace('&amp;', 'e')
+    text = text.replace('&middot;', '.')
+    text = text.replace('&nbsp;', ' ')
 
-    # Clean up multiple consecutive breaks
-    text = re.sub(r'(<break[^/]*/>\s*){2,}', lambda m: m.group(0).split('/>')[0] + '/> ', text)
+    # Remove URLs (TTS reads them character by character)
+    text = re.sub(r'https?://\S+', '', text)
 
-    # Clean extra spaces
+    # Remove parenthetical abbreviations that sound bad spoken
+    text = re.sub(r'\(([A-Z]{2,})\)', r'\1', text)
+
+    # Clean up multiple periods/dots
+    text = re.sub(r'\.{2,}', '.', text)
+
+    # Clean multiple spaces
     text = re.sub(r'\s+', ' ', text).strip()
 
     return text
 
 
 async def generate_audio(text, output_path, voice=VOICE, rate=RATE):
-    """Generate MP3 from text using edge-tts with natural pauses."""
-    # Add natural pauses to the text
-    text_with_pauses = add_natural_pauses(text)
+    """Generate MP3 from text using edge-tts (plain text, no SSML)."""
+    # Clean text for speech
+    clean_text = clean_text_for_speech(text)
 
-    # Add intro with pause
-    intro = 'Você está ouvindo o O and G plus Mining Intelligence Brief... '
-    closing = ' ... Fim da edição. Obrigado por ouvir.'
+    # Add intro and closing (using periods for natural pauses)
+    intro = 'Você está ouvindo o O and G plus Mining Intelligence Brief. '
+    closing = '. Fim da edição. Obrigado por ouvir.'
 
-    full_text = intro + text_with_pauses + closing
+    full_text = intro + clean_text + closing
 
     print(f"Generating audio ({len(text)} chars, with natural pauses)...")
     print(f"Voice: {voice}")
