@@ -24,7 +24,7 @@
 
 /* Header */
 .header {
-  background: linear-gradient(to bottom, rgba(10,30,50,0.65), rgba(10,30,50,0.85)), url('../assets/hero-banner.jpg') center top/cover no-repeat;
+  background: linear-gradient(to bottom, rgba(10,30,50,0.55), rgba(10,30,50,0.75)), url('../assets/portal-hero.png') center/cover no-repeat;
   border-radius: var(--radius-lg);
   padding: 48px 36px;
   text-align: center;
