@@ -228,9 +228,6 @@
 
 /* Section Divider */
 .section-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   margin: 36px 0 20px;
   font-family: 'DM Serif Display', serif;
   font-size: 1.1em;
@@ -239,18 +236,11 @@
   padding-bottom: 10px;
 }
 .section-divider span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
-  background: var(--blue-pale);
-  font-size: 0.75em;
-  flex-shrink: 0;
-}
-.section-divider::after {
-  display: none;
+  display: inline;
+  width: auto;
+  height: auto;
+  background: none;
+  font-size: inherit;
 }
 
 /* Executive Summary */
@@ -380,18 +370,11 @@
 .tag-petroleo { background: #eff6ff; color: #1d4ed8; }
 .tag-leilao { background: #fffbeb; color: #b45309; }
 
-/* Impact badges */
-.impact {
-  font-size: 0.65em;
-  padding: 3px 10px;
-  border-radius: var(--radius-xl);
-  font-weight: 700;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.impact-high { background: #fef2f2; color: #dc2626; }
-.impact-medium { background: #fffbeb; color: #d97706; }
-.impact-watch { background: #eff6ff; color: #2563eb; }
+/* Impact badges — hidden per user preference */
+.impact,
+.impact-high,
+.impact-medium,
+.impact-watch { display: none; }
 
 /* News card typography */
 .news-card h3 {
