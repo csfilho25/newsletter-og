@@ -6,63 +6,62 @@
 (function() {
   'use strict';
 
-  const MONTHS_PT = {
+  var MONTHS_PT = {
     '01': 'Janeiro', '02': 'Fevereiro', '03': 'Marco',
     '04': 'Abril', '05': 'Maio', '06': 'Junho',
     '07': 'Julho', '08': 'Agosto', '09': 'Setembro',
     '10': 'Outubro', '11': 'Novembro', '12': 'Dezembro'
   };
 
-  const WEEKDAYS_PT = ['Domingo', 'Segunda-feira', 'Terca-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sabado'];
+  var WEEKDAYS_PT = ['Domingo', 'Segunda-feira', 'Terca-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sabado'];
 
   function formatDate(dateStr) {
-    const parts = dateStr.split('-');
-    const day = parseInt(parts[2]);
-    const month = MONTHS_PT[parts[1]] || parts[1];
-    const year = parts[0];
-    const d = new Date(dateStr + 'T12:00:00');
-    const weekday = WEEKDAYS_PT[d.getDay()];
-    return `${weekday}, ${day} de ${month} de ${year}`;
-  }
-
-  function formatDateShort(dateStr) {
-    const parts = dateStr.split('-');
-    const day = parts[2];
-    const month = MONTHS_PT[parts[1]] || parts[1];
-    return `${day} ${month.substring(0, 3)} ${parts[0]}`;
+    var parts = dateStr.split('-');
+    var day = parseInt(parts[2]);
+    var month = MONTHS_PT[parts[1]] || parts[1];
+    var year = parts[0];
+    var d = new Date(dateStr + 'T12:00:00');
+    var weekday = WEEKDAYS_PT[d.getDay()];
+    return weekday + ', ' + day + ' de ' + month + ' de ' + year;
   }
 
   function renderHero(edition) {
-    const badge = document.getElementById('hero-badge');
-    const title = document.getElementById('hero-title');
-    const highlights = document.getElementById('hero-highlights');
-    const readBtn = document.getElementById('hero-read-btn');
-    const listenBtn = document.getElementById('hero-listen-btn');
+    var badge = document.getElementById('hero-badge');
+    var title = document.getElementById('hero-title');
+    var excerpt = document.getElementById('hero-excerpt');
+    var highlights = document.getElementById('hero-highlights');
+    var readBtn = document.getElementById('hero-read-btn');
+    var listenBtn = document.getElementById('hero-listen-btn');
 
     if (!edition) {
       badge.textContent = 'Nenhuma edicao disponivel';
       return;
     }
 
-    badge.textContent = `Ed. #${edition.number} — ${formatDate(edition.date)}`;
+    badge.textContent = 'Ed. #' + edition.number + ' — ' + formatDate(edition.date);
     title.textContent = edition.title;
+
+    // First highlight as excerpt
+    if (edition.highlights && edition.highlights.length > 0) {
+      excerpt.textContent = edition.highlights[0];
+    }
 
     highlights.innerHTML = '';
     if (edition.highlights) {
-      edition.highlights.forEach(function(h) {
-        const li = document.createElement('li');
+      edition.highlights.slice(1).forEach(function(h) {
+        var li = document.createElement('li');
         li.textContent = h;
         highlights.appendChild(li);
       });
     }
 
-    const editionUrl = 'editions/' + edition.file;
+    var editionUrl = 'editions/' + edition.file;
     readBtn.href = editionUrl;
     listenBtn.href = editionUrl + '#listen';
   }
 
   function renderArchive(editions) {
-    const grid = document.getElementById('archive-grid');
+    var grid = document.getElementById('archive-grid');
     grid.innerHTML = '';
 
     if (!editions || editions.length === 0) {
@@ -71,11 +70,11 @@
     }
 
     editions.forEach(function(edition) {
-      const card = document.createElement('a');
+      var card = document.createElement('a');
       card.className = 'archive-card';
       card.href = 'editions/' + edition.file;
 
-      let highlightsHtml = '';
+      var highlightsHtml = '';
       if (edition.highlights) {
         highlightsHtml = '<ul class="archive-card-highlights">' +
           edition.highlights.map(function(h) { return '<li>' + h + '</li>'; }).join('') +

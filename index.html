@@ -15,6 +15,35 @@
 </head>
 <body>
 
+<!-- TRADINGVIEW LIVE TICKER -->
+<div class="live-ticker-bar">
+  <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+    {
+      "symbols": [
+        {"proName": "FX:USDBRL", "title": "USD/BRL"},
+        {"proName": "TVC:UKOIL", "title": "Brent"},
+        {"proName": "BMFBOVESPA:PETR4", "title": "PETR4"},
+        {"proName": "BMFBOVESPA:PETR3", "title": "PETR3"},
+        {"proName": "BMFBOVESPA:PRIO3", "title": "PRIO3"},
+        {"proName": "BMFBOVESPA:BRAV3", "title": "BRAV3"},
+        {"proName": "BMFBOVESPA:ENEV3", "title": "ENEV3"},
+        {"proName": "BMFBOVESPA:RECV3", "title": "RECV3"},
+        {"proName": "BMFBOVESPA:VALE3", "title": "VALE3"},
+        {"proName": "TVC:GOLD", "title": "Ouro"},
+        {"proName": "BMFBOVESPA:IBOV", "title": "Ibovespa"}
+      ],
+      "showSymbolLogo": false,
+      "isTransparent": false,
+      "displayMode": "regular",
+      "colorTheme": "light",
+      "locale": "br"
+    }
+    </script>
+  </div>
+</div>
+
 <!-- NAV -->
 <nav class="portal-nav">
   <div class="portal-nav-inner">
@@ -28,17 +57,23 @@
   </div>
 </nav>
 
-<!-- HERO: Latest Edition -->
+<!-- HERO: Featured Story -->
 <section class="portal-hero" id="ultima">
-  <div class="hero-card" id="hero-card">
-    <div class="hero-badge" id="hero-badge">Carregando...</div>
-    <h2 id="hero-title">O&G + Mining Intelligence Brief</h2>
-    <ul class="hero-highlights" id="hero-highlights">
-      <li>Carregando edicao mais recente...</li>
-    </ul>
-    <div class="hero-actions" id="hero-actions">
-      <a href="#" class="btn-primary" id="hero-read-btn">Ler Edicao Completa</a>
-      <a href="#" class="btn-secondary" id="hero-listen-btn">Ouvir no Navegador</a>
+  <div class="hero-featured" id="hero-card">
+    <div class="hero-featured-image" id="hero-image">
+      <img src="assets/hero-banner.jpg" alt="O&G + Mining Intelligence Brief" id="hero-img">
+    </div>
+    <div class="hero-featured-content">
+      <div class="hero-badge" id="hero-badge">Carregando...</div>
+      <h2 id="hero-title">O&G + Mining Intelligence Brief</h2>
+      <p class="hero-excerpt" id="hero-excerpt">Carregando edicao mais recente...</p>
+      <ul class="hero-highlights" id="hero-highlights">
+        <li>Carregando...</li>
+      </ul>
+      <div class="hero-actions" id="hero-actions">
+        <a href="#" class="btn-primary" id="hero-read-btn">Ler Edicao Completa</a>
+        <a href="#" class="btn-secondary" id="hero-listen-btn">Ouvir Edicao</a>
+      </div>
     </div>
   </div>
 </section>
@@ -56,7 +91,7 @@
   <div class="about-card">
     <h2>Sobre o Brief</h2>
     <p>O <strong>O&G + Mining Intelligence Brief</strong> e uma newsletter diaria de inteligencia setorial cobrindo Oil & Gas, Energia Eletrica e Mineracao no Brasil. Produzida de segunda a sexta, com curadoria focada em headhunters e profissionais de executive search.</p>
-    <p>Cada edicao traz: resumo executivo, key numbers, noticias detalhadas com fontes verificadas, radar de leiloes e eventos, e uma analise estrategica exclusiva sob a otica de contratacoes e movimentacao de talentos.</p>
+    <p>Cada edicao traz: resumo executivo, cotacoes em tempo real, agenda de eventos, noticias detalhadas com fontes verificadas, e uma analise estrategica exclusiva sob a otica de contratacoes e movimentacao de talentos.</p>
     <div class="about-features">
       <div class="about-feature">
         <div class="about-feature-icon">&#9981;</div>
