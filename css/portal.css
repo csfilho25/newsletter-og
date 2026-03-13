@@ -6,6 +6,7 @@
   width: 100%;
   border-bottom: 1px solid var(--border);
   overflow: hidden;
+  height: 30px;
 }
 .live-ticker-bar .tradingview-widget-container {
   zoom: 0.65;
