@@ -1,14 +1,14 @@
 /* O&G + Mining Intelligence Brief — Portal Styles */
 /* Inspired by The Peak — clean, professional */
 
-/* Live Ticker Bar — zoom 0.75 to fit more symbols */
+/* Live Ticker Bar — zoom 0.65 scrolling tape */
 .live-ticker-bar {
   width: 100%;
   border-bottom: 1px solid var(--border);
   overflow: hidden;
 }
 .live-ticker-bar .tradingview-widget-container {
-  zoom: 0.75;
+  zoom: 0.65;
 }
 
 /* Navigation */
