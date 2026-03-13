@@ -189,6 +189,16 @@
   color: var(--text-bright);
   margin-bottom: 3px;
 }
+.agenda-info .agenda-title a {
+  color: var(--text-bright);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--blue-light);
+  transition: all 0.2s;
+}
+.agenda-info .agenda-title a:hover {
+  color: var(--blue);
+  border-bottom-color: var(--blue);
+}
 .agenda-info .agenda-org {
   font-size: 0.76em;
   color: var(--text-dim);
