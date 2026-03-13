@@ -6,10 +6,10 @@
   width: 100%;
   border-bottom: 1px solid var(--border);
   overflow: hidden;
-  height: 46px;
+  height: 36px;
 }
 .live-ticker-bar .tradingview-widget-container {
-  height: 46px;
+  height: 36px;
 }
 
 /* Navigation */
@@ -397,7 +397,7 @@
   .subscribe-form { flex-direction: column; }
   .portal-nav-links { gap: 2px; }
   .portal-nav-links a { padding: 6px 10px; font-size: 0.78em; }
-  .live-ticker-bar { height: 46px; }
+  .live-ticker-bar { height: 36px; }
 }
 
 @media (max-width: 480px) {
