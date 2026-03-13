@@ -9,7 +9,10 @@
   height: 46px;
 }
 .live-ticker-bar .tradingview-widget-container {
-  height: 46px;
+  height: 78px; /* natural widget height — allows internal scroll to work */
+}
+.live-ticker-bar iframe {
+  height: 78px !important;
 }
 
 /* Navigation */
