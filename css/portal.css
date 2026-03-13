@@ -1,7 +1,7 @@
 /* O&G + Mining Intelligence Brief — Portal Styles */
 /* Inspired by The Peak — clean, professional */
 
-/* Live Ticker Bar — scrolling tape */
+/* Live Ticker Bar — scrolling tape with CSS animation */
 .live-ticker-bar {
   width: 100%;
   border-bottom: 1px solid var(--border);
@@ -9,10 +9,20 @@
   height: 46px;
 }
 .live-ticker-bar .tradingview-widget-container {
-  height: 78px; /* natural widget height — allows internal scroll to work */
+  width: 250%;
+  height: 46px;
+  animation: ticker-scroll 50s linear infinite;
+}
+.live-ticker-bar .tradingview-widget-container:hover {
+  animation-play-state: paused;
 }
 .live-ticker-bar iframe {
-  height: 78px !important;
+  width: 100% !important;
+  height: 46px !important;
+}
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-60%); }
 }
 
 /* Navigation */
@@ -401,7 +411,7 @@
   .portal-nav-links { gap: 2px; }
   .portal-nav-links a { padding: 6px 10px; font-size: 0.78em; }
   .live-ticker-bar { height: 32px; }
-  .live-ticker-bar .tradingview-widget-container { zoom: 0.65; }
+  .live-ticker-bar .tradingview-widget-container { zoom: 0.65; width: 350%; }
 }
 
 @media (max-width: 480px) {
