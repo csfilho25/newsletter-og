@@ -12,6 +12,7 @@ import smtplib
 from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.header import Header
 
 try:
     from bs4 import BeautifulSoup
@@ -64,22 +65,40 @@ def extract_metadata(html_path):
         for li in exec_summary.find_all('li')[:7]:
             summary_items.append(li.decode_contents())
 
-    # Extract key numbers
+    # Extract key numbers from market-ticker (new format) or numbers-grid (legacy)
     numbers = []
-    numbers_grid = soup.find(class_='numbers-grid')
-    if numbers_grid:
-        for card in numbers_grid.find_all(class_='num-card')[:8]:
-            value = card.find(class_='value')
-            label = card.find(class_='label')
-            change = card.find(class_='change')
-            if value and label:
+    ticker = soup.find(class_='market-ticker')
+    if ticker:
+        for item in ticker.find_all(class_='ticker-item')[:8]:
+            symbol = item.find(class_='ticker-symbol')
+            price = item.find(class_='ticker-price')
+            change = item.find(class_='ticker-change')
+            if symbol and price:
+                change_text = change.get_text(strip=True) if change else ''
+                change_cls = change.get('class', []) if change else []
                 numbers.append({
-                    'value': value.get_text(strip=True),
-                    'label': label.get_text(strip=True),
-                    'change': change.get_text(strip=True) if change else '',
-                    'direction': 'up' if change and 'up' in change.get('class', []) else
-                                 'down' if change and 'down' in change.get('class', []) else 'neutral'
+                    'value': price.get_text(strip=True),
+                    'label': symbol.get_text(strip=True),
+                    'change': change_text,
+                    'direction': 'up' if any('up' in c or 'positive' in c for c in change_cls) else
+                                 'down' if any('down' in c or 'negative' in c for c in change_cls) else 'neutral'
                 })
+    else:
+        # Legacy format fallback
+        numbers_grid = soup.find(class_='numbers-grid')
+        if numbers_grid:
+            for card in numbers_grid.find_all(class_='num-card')[:8]:
+                value = card.find(class_='value')
+                label = card.find(class_='label')
+                change = card.find(class_='change')
+                if value and label:
+                    numbers.append({
+                        'value': value.get_text(strip=True),
+                        'label': label.get_text(strip=True),
+                        'change': change.get_text(strip=True) if change else '',
+                        'direction': 'up' if change and 'up' in change.get('class', []) else
+                                     'down' if change and 'down' in change.get('class', []) else 'neutral'
+                    })
 
     # Extract alert banner
     alert = soup.find(class_='alert-banner')
@@ -240,13 +259,13 @@ def send_email(html_path):
     print(f"Reading edition: {html_path.name}")
     meta = extract_metadata(html_path)
 
-    subject = f"O&G Brief Ed. #{meta['edition_num']} — {meta['date_subject']}"
+    subject = f"O&G Brief Ed. #{meta['edition_num']} - {meta['date_subject']}"
     email_html = build_email_html(meta)
 
     # Build message
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = subject
-    msg['From'] = GMAIL_USER
+    msg['Subject'] = Header(subject, 'utf-8')
+    msg['From'] = f"O&G Intelligence Brief <{GMAIL_USER}>"
     msg['To'] = RECIPIENT
 
     # Plain text fallback

@@ -31,11 +31,18 @@ SKIP_CLASSES = [
     # Navigation and UI
     'source', 'calendar-btn', 'back-link', 'listen-btn',
     'subscribe-form', 'subscribe-card',
-    # Number indicators and stats
+    # Number indicators and stats (legacy)
     'numbers-grid', 'num-card', 'stats-bar', 'stat-item',
     'scenario-grid', 'scenario-card', 'player-meta',
     'section-divider', 'tags', 'impact', 'change',
     'header-meta', 'header-icon', 'footer',
+    # Market ticker (new format — prices don't sound good in audio)
+    'market-ticker', 'ticker-grid', 'ticker-item',
+    'ticker-symbol', 'ticker-price', 'ticker-change',
+    # Agenda/calendar section (dates and event metadata)
+    'agenda-section', 'agenda-item', 'agenda-date-badge',
+    'agenda-day', 'agenda-month', 'agenda-info',
+    'agenda-title', 'agenda-org', 'agenda-desc',
     # Executive summary (bullet points sound bad in audio)
     'exec-summary',
     # Sources/references (irrelevant in audio)
@@ -139,8 +146,12 @@ ABBREVIATIONS = [
     (r'\b3T25\b', 'terceiro trimestre de 2025'),
     (r'\b2T25\b', 'segundo trimestre de 2025'),
     (r'\b1T25\b', 'primeiro trimestre de 2025'),
+    (r'\b3T24\b', 'terceiro trimestre de 2024'),
     (r'\b4T24\b', 'quarto trimestre de 2024'),
     (r'\b1T26\b', 'primeiro trimestre de 2026'),
+    (r'\b2T26\b', 'segundo trimestre de 2026'),
+    (r'\b3T26\b', 'terceiro trimestre de 2026'),
+    (r'\b4T26\b', 'quarto trimestre de 2026'),
 ]
 
 
