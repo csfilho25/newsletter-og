@@ -1,5 +1,5 @@
 /**
- * O&G + Mining Intelligence Brief — Audio Player
+ * The Sector — Audio Player
  * Hybrid: HTML5 Audio (MP3 preferred) + Web Speech API (TTS fallback)
  * MP3 uses Microsoft Francisca Neural — natural Brazilian Portuguese voice
  */
@@ -272,7 +272,7 @@
       // MP3 mode: show time
       var timeDisplay = document.getElementById('player-time');
       var progressFill = document.getElementById('player-progress-fill');
-      if (sectionName) sectionName.textContent = 'O&G + Mining Intelligence Brief';
+      if (sectionName) sectionName.textContent = 'The Sector';
       if (timeDisplay) timeDisplay.textContent = formatTime(audioElement.currentTime) + ' / ' + formatTime(audioDuration);
       if (progressFill && audioDuration > 0) {
         progressFill.style.width = (audioElement.currentTime / audioDuration * 100) + '%';

@@ -1,5 +1,5 @@
 /**
- * O&G + Mining Intelligence Brief — Portal Logic
+ * The Sector — Portal Logic
  * Loads editions from index.json and renders hero + archive
  */
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-O&G + Mining Intelligence Brief — Email Sender
+The Sector — Email Sender
 Sends newsletter edition via Gmail SMTP with App Password.
 Requires: GMAIL_APP_PASSWORD environment variable set.
 """
@@ -187,9 +187,8 @@ def build_email_html(meta):
 
 <!-- HEADER -->
 <tr><td style="background:linear-gradient(135deg,#1a4a73 0%,#296FB1 50%,#3b82c4 100%);padding:36px 32px;text-align:center;">
-  <div style="font-size:28px;margin-bottom:8px;">&#9981;&#9935;&#9889;</div>
-  <h1 style="margin:0;font-size:22px;color:#ffffff;font-weight:700;">O&amp;G + Mining Intelligence Brief</h1>
-  <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,0.8);">Oil, Gas, Energia &amp; Mineracao — Edicao Completa</p>
+  <h1 style="margin:0;font-size:30px;color:#ffffff;font-weight:700;letter-spacing:6px;text-transform:uppercase;">THE SECTOR</h1>
+  <p style="margin:8px 0 0;font-size:11px;color:rgba(255,255,255,0.75);letter-spacing:2px;text-transform:uppercase;">Oil, Gas, Mineração &amp; Energia</p>
   <div style="margin-top:16px;display:inline-block;">
     <span style="display:inline-block;background:rgba(255,255,255,0.15);color:#fff;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;">Ed. #{meta['edition_num']} &middot; {meta['date_display']}</span>
   </div>
@@ -227,12 +226,12 @@ def build_email_html(meta):
 <!-- FOOTER -->
 <tr><td style="background:#f8fafc;padding:24px 32px;border-top:1px solid #e2e8f0;text-align:center;">
   <p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.6;">
-    O&amp;G + Mining Intelligence Brief<br>
-    Inteligencia diaria para decisores do setor energetico e mineral<br>
+    <strong>THE SECTOR</strong><br>
+    Inteligência diária para decisores do setor energético e mineral<br>
     <a href="https://csfilho25.github.io/newsletter-og/" style="color:#296FB1;text-decoration:none;">Portal</a> &middot;
     <a href="{listen_url}" style="color:#296FB1;text-decoration:none;">Ouvir</a>
   </p>
-  <p style="margin:8px 0 0;font-size:10px;color:#cbd5e1;">Powered by Claude AI &middot; Dados publicos &middot; Nao constitui recomendacao de investimento</p>
+  <p style="margin:8px 0 0;font-size:10px;color:#cbd5e1;">Powered by Claude AI &middot; Dados públicos &middot; Não constitui recomendação de investimento</p>
 </td></tr>
 
 </table>
@@ -259,17 +258,17 @@ def send_email(html_path):
     print(f"Reading edition: {html_path.name}")
     meta = extract_metadata(html_path)
 
-    subject = f"O&G Brief Ed. #{meta['edition_num']} - {meta['date_subject']}"
+    subject = f"The Sector Ed. #{meta['edition_num']} — {meta['date_subject']}"
     email_html = build_email_html(meta)
 
     # Build message
     msg = MIMEMultipart('alternative')
     msg['Subject'] = Header(subject, 'utf-8')
-    msg['From'] = f"O&G Intelligence Brief <{GMAIL_USER}>"
+    msg['From'] = f"The Sector <{GMAIL_USER}>"
     msg['To'] = RECIPIENT
 
     # Plain text fallback
-    plain_text = f"O&G + Mining Intelligence Brief - Ed. #{meta['edition_num']}\n"
+    plain_text = f"The Sector - Ed. #{meta['edition_num']}\n"
     plain_text += f"Data: {meta['date_display']}\n\n"
     plain_text += f"Leia no navegador: https://csfilho25.github.io/newsletter-og/editions/{meta['date_iso']}.html\n"
 

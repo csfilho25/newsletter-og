@@ -1,4 +1,4 @@
-/* O&G + Mining Intelligence Brief — Portal Styles */
+/* The Sector — Portal Styles */
 /* Inspired by The Peak — clean, professional */
 
 /* Live Ticker Bar — scrolling tape with CSS animation */
@@ -47,10 +47,12 @@
 }
 .portal-logo {
   font-family: 'DM Serif Display', serif;
-  font-size: 1.15em;
+  font-size: 1.35em;
   color: var(--text-bright);
   text-decoration: none;
   white-space: nowrap;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
 .portal-logo span { color: var(--blue); }
 .portal-logo:hover { text-decoration: none; }

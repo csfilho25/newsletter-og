@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-O&G + Mining Intelligence Brief — Audio Generator
+The Sector — Audio Generator
 Extracts text from edition HTML and generates MP3 using Microsoft Neural TTS.
 Requires: pip install edge-tts beautifulsoup4
 """
@@ -417,7 +417,7 @@ async def generate_audio(text, output_path, voice=VOICE, rate=RATE):
     """Generate MP3 from text using edge-tts (plain text, no SSML)."""
     clean_text = clean_text_for_speech(text)
 
-    intro = 'Você está ouvindo o Óleo e Gás plus Máining Intéligence Bríf. The Sector. '
+    intro = 'Você está ouvindo o The Sector. Óleo, Gás, Mineração e Energia. '
     closing = '. Fim da edição de hoje. Obrigado por ouvir o The Sector.'
 
     full_text = intro + clean_text + closing
