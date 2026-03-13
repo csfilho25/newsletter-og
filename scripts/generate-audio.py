@@ -105,11 +105,20 @@ ABBREVIATIONS = [
     (r'\bMWh\b', 'megawatt-hora'),
 
     # Currency and numbers
-    (r'US\$\s*', 'dólares '),
+    # US$ with English decimal point: US$14.9 → "14 vírgula 9 dólares"
+    (r'US\$\s*(\d+)\.(\d+)', r'\1 vírgula \2 dólares'),
+    # US$ integer: US$800 → "800 dólares"
+    (r'US\$\s*(\d+)', r'\1 dólares'),
+    # R$ — keep prefix for normalize_brazilian_numbers to reorder
     (r'R\$\s*', 'reais '),
-    (r'\bbi\b', 'bilhões'),
-    (r'\bmi\b', 'milhões'),
-    (r'\btri\b', 'trilhões'),
+    # Digit-adjacent: "3,2bi" → "3,2 bilhões" (\b doesn't work between digit and letter)
+    (r'(\d)bi\b', r'\1 bilhões'),
+    (r'(\d)mi\b', r'\1 milhões'),
+    (r'(\d)tri\b', r'\1 trilhões'),
+    # Standalone: "bi" → "bilhões"
+    (r'(?i)\bbi\b', 'bilhões'),
+    (r'(?i)\bmi\b', 'milhões'),
+    (r'(?i)\btri\b', 'trilhões'),
 
     # Percentages - ensure TTS reads "por cento"
     (r'(\d)\s*%', r'\1 por cento'),
@@ -138,6 +147,11 @@ ABBREVIATIONS = [
     (r'\bPRIO3\b', 'PRIO'),
     (r'\bBRAV3\b', 'Brava Energia'),
     (r'\bVALE3\b', 'Vale'),
+    (r'\bENEV3\b', 'Eneva'),
+    (r'\bRECV3\b', 'PetroRecôncavo'),
+    (r'\bCSNA3\b', 'CSN'),
+    (r'\bCMIN3\b', 'CSN Mineração'),
+    (r'\bSUZB3\b', 'Suzano'),
 
     # Directions / variations
     (r'\ba/a\b', 'ano a ano'),
@@ -222,6 +236,90 @@ def expand_abbreviations(text):
     return text
 
 
+# ============================================================
+# Brazilian number normalization for natural TTS reading
+# ============================================================
+
+def normalize_brazilian_numbers(text):
+    """Convert Brazilian number formatting so TTS reads naturally.
+
+    Brazilian format: 1.000,50 (dots for thousands, comma for decimals)
+    TTS needs:        1000 vírgula 50 (no thousand dots, 'vírgula' for comma)
+
+    Also handles currency amounts like 'reais 580 bilhões' → '580 bilhões de reais'
+    """
+    # Scale words — match both accented and unaccented (HTML may strip accents)
+    SCALE = r'(?:bilh[õo]es|bilh[aã]o|milh[õo]es|milh[aã]o|trilh[õo]es|trilh[aã]o|mil)\b'
+
+    # Step 0: Fix stuck-together text from HTML extraction
+    # e.g. "recolheureais" → "recolheu reais", "bilhoesem" → "bilhoes em"
+    # IMPORTANT: Do NOT include "mil" in scale-word alternation — it would match
+    # inside "milhoes" when followed by space, splitting it into "mil hoes"
+    # Character class for Portuguese letters (including accented)
+    PT = r'a-záàâãéêíóôõúüç'
+    text = re.sub(r'([' + PT + r'])(reais|dólares|dolares)', r'\1 \2', text, flags=re.IGNORECASE)
+    text = re.sub(r'(bilh[õo]es|bilh[aã]o|milh[õo]es|milh[aã]o|trilh[õo]es|trilh[aã]o)([' + PT + r'])', r'\1 \2', text, flags=re.IGNORECASE)
+    text = re.sub(r'(\d)(reais|dólares|dolares)', r'\1 \2', text, flags=re.IGNORECASE)
+    # Fix digits stuck to words: "de29" → "de 29", "a63" → "a 63"
+    text = re.sub(r'([' + PT + r'])(\d)', r'\1 \2', text)
+    text = re.sub(r'(\d)([' + PT + r'])', r'\1 \2', text)
+
+    # Step 1: Remove thousand-separator dots in numbers like 1.000, 126.276, 1.000.000
+    # First handle numbers WITH decimal: 1.000,50 → 1000,50
+    text = re.sub(r'\b(\d{1,3}(?:\.\d{3})+),(\d+)', lambda m: m.group(1).replace('.', '') + ',' + m.group(2), text)
+    # Then handle numbers WITHOUT decimal: 1.000 → 1000, 126.276 → 126276
+    text = re.sub(r'\b(\d{1,3}(?:\.\d{3})+)\b', lambda m: m.group(0).replace('.', ''), text)
+
+    # Step 2: Fix currency + decimal + scale: "reais 277,6 bilhoes" → "277 vírgula 6 bilhões de reais"
+    text = re.sub(
+        r'\breais\s+(\d+),(\d+)\s*(' + SCALE + r')',
+        r'\1 vírgula \2 \3 de reais', text, flags=re.IGNORECASE)
+    text = re.sub(
+        r'\b(?:dólares|dolares)\s+(\d+),(\d+)\s*(' + SCALE + r')',
+        r'\1 vírgula \2 \3 de dólares', text, flags=re.IGNORECASE)
+
+    # Step 3: Fix currency + integer + scale: "reais 580 bilhoes" → "580 bilhões de reais"
+    text = re.sub(
+        r'\breais\s+(\d+)\s*(' + SCALE + r')',
+        r'\1 \2 de reais', text, flags=re.IGNORECASE)
+    text = re.sub(
+        r'\b(?:dólares|dolares)\s+(\d+)\s*(' + SCALE + r')',
+        r'\1 \2 de dólares', text, flags=re.IGNORECASE)
+
+    # Step 4: Simple currency with centavos: "reais 58,45" → "58 reais e 45 centavos"
+    text = re.sub(r'\breais\s+(\d+),(\d{2})\b', r'\1 reais e \2 centavos', text)
+    text = re.sub(r'\b(?:dólares|dolares)\s+(\d+),(\d{2})\b', r'\1 dólares e \2 centavos', text)
+
+    # Step 5: Simple currency integer: "reais 580" → "580 reais" (only if no scale word after)
+    text = re.sub(
+        r'\breais\s+(\d+)(?!\s*(?:' + SCALE + r'|reais|centavos|de\b|vírgula|,))',
+        r'\1 reais', text, flags=re.IGNORECASE)
+    text = re.sub(
+        r'\b(?:dólares|dolares)\s+(\d+)(?!\s*(?:' + SCALE + r'|dólares|dolares|centavos|de\b|vírgula|,))',
+        r'\1 dólares', text, flags=re.IGNORECASE)
+
+    # Step 6: Read decimal commas as "vírgula" for numbers with scale words
+    # e.g., "2,7 milhões" → "2 vírgula 7 milhões", "14,7 por cento"
+    text = re.sub(
+        r'\b(\d+),(\d+)\s*(' + SCALE + r'|por cento|pontos percentuais)',
+        r'\1 vírgula \2 \3', text, flags=re.IGNORECASE)
+
+    # Step 7: Remaining decimal commas → "vírgula"
+    text = re.sub(
+        r'(?<!vírgula )(?<!e )\b(\d+),(\d+)\b(?!\s*(?:centavos|reais|dólares|dolares))',
+        r'\1 vírgula \2', text)
+
+    # Step 8: Normalize unaccented scale words to accented (for TTS pronunciation)
+    text = re.sub(r'\bbilhoes\b', 'bilhões', text, flags=re.IGNORECASE)
+    text = re.sub(r'\bmilhoes\b', 'milhões', text, flags=re.IGNORECASE)
+    text = re.sub(r'\btrilhoes\b', 'trilhões', text, flags=re.IGNORECASE)
+    text = re.sub(r'\bbilhao\b', 'bilhão', text, flags=re.IGNORECASE)
+    text = re.sub(r'\bmilhao\b', 'milhão', text, flags=re.IGNORECASE)
+    text = re.sub(r'\btrilhao\b', 'trilhão', text, flags=re.IGNORECASE)
+
+    return text
+
+
 def clean_text_for_speech(text):
     """Clean and prepare text for natural TTS reading."""
     # Em dash — replace with period for sentence break
@@ -244,6 +342,9 @@ def clean_text_for_speech(text):
 
     # Expand abbreviations BEFORE other cleanup
     text = expand_abbreviations(text)
+
+    # Normalize Brazilian number formatting for natural reading
+    text = normalize_brazilian_numbers(text)
 
     # Ensure paragraph breaks become sentence breaks
     text = re.sub(r'\n\n+', '. ', text)
