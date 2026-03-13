@@ -125,9 +125,23 @@ ABBREVIATIONS = [
     (r'(\d),(\d+)\s*pp\b', r'\1 vírgula \2 pontos percentuais'),
     (r'(\d)\s*pp\b', r'\1 pontos percentuais'),
 
+    # Sector name and common acronyms
+    (r'\bO&G\b', 'Óleo e Gás'),
+    (r'\bO\s*&\s*G\b', 'Óleo e Gás'),
+    (r'\bE&P\b', 'Exploração e Produção'),
+    (r'\bEUA\b', 'Estados Unidos'),
+    (r'\bUE\b', 'União Européia'),
+    (r'\bIEA\b', 'Agência Internacional de Energia'),
+    (r'\bOTC\b', 'O.T.C.'),
+    (r'\bCLT\b', 'C.L.T.'),
+    (r'\bPCD\b', 'pessoa com deficiência'),
+    (r'\bD&M\b', 'D. and M.'),
+    (r'\bSPE\b', 'S.P.É.'),
+
     # Common O&G abbreviations
     (r'\bANP\b', 'A.N.P.'),
     (r'\bANM\b', 'A.N.M.'),
+    (r'\bANEEL\b', 'Aneel'),
     (r'\bOPEP\+?', 'OPEP'),
     (r'\bFPSO\b', 'F.P.S.O.'),
     (r'\bAIE\b', 'A.I.É.'),
@@ -140,6 +154,8 @@ ABBREVIATIONS = [
     (r'\bP&I\b', 'P. and I.'),
     (r'\bG7\b', 'G. sete'),
     (r'\bEAU\b', 'Emirados Árabes'),
+    (r'\bIbram\b', 'I.B.R.A.M.'),
+    (r'\bPPSA\b', 'P.P.S.A.'),
 
     # Company tickers
     (r'\bPETR4\b', 'Petrobras preferencial'),
@@ -152,6 +168,37 @@ ABBREVIATIONS = [
     (r'\bCSNA3\b', 'CSN'),
     (r'\bCMIN3\b', 'CSN Mineração'),
     (r'\bSUZB3\b', 'Suzano'),
+
+    # English terms — phonetic hints for pt-BR TTS (Francisca Neural)
+    # The TTS reads these with Portuguese phonetics, so we help with hints
+    (r'\bBrief\b', 'Bríf'),
+    (r'\bIntelligence\b', 'Intéligence'),
+    (r'\bMining\b', 'Máining'),
+    (r'\bHeadhunter\b', 'Rédrrânter'),
+    (r'\bupstream\b', 'apstrim'),
+    (r'\bdownstream\b', 'daunstrim'),
+    (r'\bmidstream\b', 'midstrim'),
+    (r'\boffshore\b', 'ófshóre'),
+    (r'\bonshore\b', 'ónshóre'),
+    (r'\blifting cost\b', 'lífting cóst'),
+    (r'\bbreakeven\b', 'breikéven'),
+    (r'\bbenchmark\b', 'bêntchmark'),
+    (r'\bspread\b', 'sprééd'),
+    (r'\bhedges?\b', 'rédges'),
+    (r'\bcapex\b', 'cápex'),
+    (r'\bopex\b', 'ópex'),
+    (r'\bguidance\b', 'gáidance'),
+    (r'\byield\b', 'iild'),
+    (r'\broyalties\b', 'róialtis'),
+    (r'\bshutdown\b', 'shâtdaun'),
+    (r'\bturnaround\b', 'târnaráund'),
+    (r'\bbacklog\b', 'béclóg'),
+    (r'\bthroughput\b', 'trúput'),
+    (r'\bbrownfield\b', 'bráunfild'),
+    (r'\bgreenfield\b', 'grínfild'),
+    (r'\bMarket Pulse\b', 'Márket Pâlse'),
+    (r'\bbpd\b', 'barris por dia'),
+    (r'\bkbpd\b', 'mil barris por dia'),
 
     # Directions / variations
     (r'\ba/a\b', 'ano a ano'),
@@ -370,8 +417,8 @@ async def generate_audio(text, output_path, voice=VOICE, rate=RATE):
     """Generate MP3 from text using edge-tts (plain text, no SSML)."""
     clean_text = clean_text_for_speech(text)
 
-    intro = 'Você está ouvindo o O and G plus Mining Intelligence Brief. '
-    closing = '. Fim da edição. Obrigado por ouvir.'
+    intro = 'Você está ouvindo o Óleo e Gás plus Máining Intéligence Bríf. The Sector. '
+    closing = '. Fim da edição de hoje. Obrigado por ouvir o The Sector.'
 
     full_text = intro + clean_text + closing
 
