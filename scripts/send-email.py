@@ -264,7 +264,9 @@ def send_email(html_path):
     # Build message
     msg = MIMEMultipart('alternative')
     msg['Subject'] = Header(subject, 'utf-8')
-    msg['From'] = f"The Sector <{GMAIL_USER}>"
+    msg['From'] = "The Sector <contato@thesector.com.br>"
+    msg['Reply-To'] = 'contato@thesector.com.br'
+    msg['Sender'] = GMAIL_USER
     msg['To'] = RECIPIENT
 
     # Plain text fallback
