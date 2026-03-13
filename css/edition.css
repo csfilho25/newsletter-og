@@ -96,15 +96,13 @@
   font-weight: 700;
 }
 .ticker-grid {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
   gap: 0;
-  flex-wrap: wrap;
 }
 .ticker-item {
-  flex: 1;
-  min-width: 120px;
   text-align: center;
-  padding: 10px 14px;
+  padding: 10px 8px;
   border-right: 1px solid var(--border);
 }
 .ticker-item:last-child { border-right: none; }
@@ -602,8 +600,8 @@
   .news-card { padding: 20px; }
   .headhunter-box { padding: 22px 24px; }
   .alert-banner { padding: 16px 20px; flex-direction: column; }
-  .ticker-grid { flex-wrap: wrap; }
-  .ticker-item { min-width: 100px; border-bottom: 1px solid var(--border); }
+  .ticker-grid { grid-template-columns: repeat(3, 1fr); }
+  .ticker-item { border-bottom: 1px solid var(--border); }
   .agenda-item { flex-direction: column; gap: 8px; }
 }
 
