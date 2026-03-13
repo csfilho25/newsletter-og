@@ -220,27 +220,27 @@
 .section-divider {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin: 40px 0 24px;
+  gap: 12px;
+  margin: 36px 0 20px;
   font-family: 'DM Serif Display', serif;
-  font-size: 1.3em;
+  font-size: 1.1em;
   color: var(--text-bright);
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 10px;
 }
 .section-divider span {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-sm);
   background: var(--blue-pale);
   font-size: 0.75em;
+  flex-shrink: 0;
 }
 .section-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
+  display: none;
 }
 
 /* Executive Summary */
@@ -276,12 +276,9 @@
 }
 .exec-summary li strong { color: var(--text-bright); }
 
-/* Numbers Grid */
+/* Numbers Grid — hidden, replaced by Market Ticker */
 .numbers-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 14px;
-  margin-bottom: 32px;
+  display: none;
 }
 .num-card {
   background: var(--card);
@@ -409,7 +406,6 @@
 }
 .news-card .source a { color: var(--text-dim); }
 .news-card .source a:hover { color: var(--blue); }
-.news-card .source { display: none; }
 
 /* Images */
 .news-image {
@@ -596,8 +592,8 @@
 @media (max-width: 768px) {
   .header { padding: 32px 24px; min-height: 160px; }
   .header h1 { font-size: 1.8em; }
-  .numbers-grid { grid-template-columns: repeat(2, 1fr); }
   .two-col { grid-template-columns: 1fr; }
+  .section-divider { font-size: 0.95em; gap: 8px; }
   .scenario-grid { grid-template-columns: 1fr; }
   .exec-summary { padding: 22px 24px; }
   .news-card { padding: 20px; }
@@ -612,9 +608,8 @@
   .header-icon { font-size: 32px; }
   .header-meta { flex-direction: column; align-items: center; gap: 6px; }
   .header-meta span { width: 100%; text-align: center; }
-  .section-divider { font-size: 1.1em; margin: 28px 0 16px; }
-  .num-card .value { font-size: 1.35em; }
-  .num-card { padding: 16px 12px; }
+  .section-divider { font-size: 0.85em; margin: 24px 0 12px; gap: 6px; }
+  .section-divider span { width: 26px; height: 26px; }
   .news-card { padding: 16px; }
   .news-card h3 { font-size: 1.05em; }
   .radar-card { padding: 18px; }
