@@ -9,8 +9,8 @@
   height: 46px;
 }
 .live-ticker-bar .tradingview-widget-container {
-  width: 250%;
-  height: 46px;
+  width: 250% !important;
+  height: 46px !important;
   animation: ticker-scroll 50s linear infinite;
 }
 .live-ticker-bar .tradingview-widget-container:hover {
