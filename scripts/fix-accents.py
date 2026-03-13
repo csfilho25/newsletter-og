@@ -63,6 +63,36 @@ ACCENT_FIXES = {
     'resolucao': 'resolução', 'resolucoes': 'resoluções',
     'obrigacao': 'obrigação', 'obrigacoes': 'obrigações',
     'aquisicao': 'aquisição', 'aquisicoes': 'aquisições',
+    'contratacao': 'contratação', 'contratacoes': 'contratações',
+    'consolidacao': 'consolidação',
+    'construcao': 'construção',
+    'recomendacao': 'recomendação', 'recomendacoes': 'recomendações',
+    'aceleracao': 'aceleração',
+    'ampliacao': 'ampliação',
+    'aplicacao': 'aplicação',
+    'completacao': 'completação', 'completacoes': 'completações',
+    'equacao': 'equação',
+    'exposicao': 'exposição',
+    'formacao': 'formação',
+    'implicacao': 'implicação',
+    'inflacao': 'inflação',
+    'judicializacao': 'judicialização',
+    'liberacao': 'liberação', 'liberacoes': 'liberações',
+    'navegacao': 'navegação',
+    'reducao': 'redução', 'reducoes': 'reduções',
+    'relacao': 'relação',
+    'remuneracao': 'remuneração',
+    'restricao': 'restrição',
+    'retencao': 'retenção',
+    'revitalizacao': 'revitalização',
+    'valoracao': 'valoração',
+    'automacao': 'automação',
+    'federacao': 'federação',
+    'associacao': 'associação',
+    'apresentacoes': 'apresentações',
+    'inscricoes': 'inscrições',
+    'convencoes': 'convenções',
+    'eleicoes': 'eleições',
 
     # -ão / -ões
     'leilao': 'leilão', 'leiloes': 'leilões',
@@ -78,6 +108,7 @@ ACCENT_FIXES = {
     'emissao': 'emissão', 'emissoes': 'emissões',
     'posicao': 'posição', 'posicoes': 'posições',
     'condicao': 'condição', 'condicoes': 'condições',
+    'reversao': 'reversão',
 
     # -éu / -óleo / -ário
     'petroleo': 'petróleo',
@@ -149,6 +180,38 @@ ACCENT_FIXES = {
     'automatico': 'automático', 'automatica': 'automática',
     'climatico': 'climático', 'climatica': 'climática',
 
+    # -ência / -ância (more)
+    'ausencia': 'ausência',
+    'transparencia': 'transparência',
+    'vivencia': 'vivência',
+    'conferencia': 'conferência',
+    'agencia': 'agência',
+    'diretoria': 'diretoria',  # no accent — correct as is
+    'consultoria': 'consultoria',  # no accent — correct as is
+    'curadoria': 'curadoria',  # no accent — correct as is
+
+    # -ório / -ória (more)
+    'territorio': 'território',
+    'relatorio': 'relatório',
+
+    # -ável / -ível / -ível
+    'disponivel': 'disponível',
+    'comparavel': 'comparável',
+    'sustentavel': 'sustentável',
+    'saudavel': 'saudável',
+    'instavel': 'instável',
+    'nivel': 'nível',
+
+    # Specific O&G / Mining words
+    'oleo': 'óleo',
+    'residuos': 'resíduos',
+    'acao': 'ação',
+    'acoes': 'ações',
+    'historia': 'história',
+    'proxima': 'próxima', 'proximo': 'próximo',
+    'proximos': 'próximos', 'proximas': 'próximas',
+    'America': 'América',
+
     # Common words
     'tambem': 'também',
     'ate': 'até',
@@ -161,13 +224,26 @@ ACCENT_FIXES = {
     'area': 'área', 'areas': 'áreas',
     'liquida': 'líquida', 'liquido': 'líquido',
     'tercos': 'terços',
-    'cambial': 'cambial',  # no accent
     'vies': 'viés',
     'volatil': 'volátil',
     'deficit': 'déficit',
     'superavit': 'superávit',
     'edicao': 'edição', 'edicoes': 'edições',
-    'defasagem': 'defasagem',  # no accent
+    'diagnostico': 'diagnóstico',
+    'simbolo': 'símbolo', 'simbolos': 'símbolos',
+    'unico': 'único', 'unica': 'única',
+    'publico': 'público', 'publica': 'pública',
+    'tecnico': 'técnico', 'tecnica': 'técnica',
+    'economico': 'econômico', 'economica': 'econômica',
+    'especifico': 'específico', 'especifica': 'específica',
+    'especificamente': 'especificamente',  # no accent
+    'politica': 'política', 'politico': 'político',
+    'domestico': 'doméstico', 'domestica': 'doméstica',
+    'hidrico': 'hídrico', 'hidrica': 'hídrica',
+    'hidreletrica': 'hidrelétrica',
+    'termoeletrica': 'termoelétrica',
+    'eolica': 'eólica',
+    'fotovoltaica': 'fotovoltaica',  # no accent
 }
 
 # ============================================================
