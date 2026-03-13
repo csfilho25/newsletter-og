@@ -1,6 +1,6 @@
-# O&G + Mining Intelligence Brief
+# THE SECTOR
 
-Newsletter diaria de inteligencia setorial em **Oil & Gas, Energia Eletrica e Mineracao** no Brasil. Curadoria focada em headhunters e profissionais de executive search.
+Newsletter diária de inteligência setorial em **Oil, Gas, Mineração & Energia** no Brasil. Curadoria focada em headhunters e profissionais de executive search.
 
 ## Portal
 
