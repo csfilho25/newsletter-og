@@ -380,17 +380,17 @@
 }
 .subscribe-form button:hover { background: var(--blue-dark); }
 
-/* Portal Footer */
+/* Portal Footer — Dark blue + gold identity */
 .portal-footer {
-  max-width: 960px;
-  margin: 0 auto;
+  background: linear-gradient(90deg, #122d4a 0%, #0d2137 50%, #0a1628 100%);
   padding: 36px 20px;
-  border-top: 1px solid var(--border);
+  border-top: 2px solid var(--gold-dark);
   text-align: center;
   font-size: 0.82em;
-  color: var(--text-dim);
+  color: #8ba4c0;
 }
-.portal-footer a { color: var(--blue); }
+.portal-footer strong { color: #ffffff; }
+.portal-footer a { color: var(--gold); }
 
 /* Empty state */
 .archive-empty {
