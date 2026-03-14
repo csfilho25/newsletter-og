@@ -152,96 +152,191 @@ def build_number_cell(num):
 
 
 def build_email_html(meta):
-    """Build the full email HTML with inline styles."""
+    """Build the full email HTML with inline styles — ocean blue professional theme."""
     edition_url = f"https://thesector.com.br/editions/{meta['date_iso']}.html"
     listen_url = f"{edition_url}#listen"
+    subscribe_url = "https://thesector.com.br/#assinar"
 
-    # Summary list
+    # Summary list with styled bullets
     summary_html = ""
-    for item in meta['summary_items']:
-        summary_html += f'<li style="padding:4px 0;">{item}</li>\n'
+    bullet_icons = ["&#9981;", "&#128230;", "&#128200;", "&#9889;", "&#9935;", "&#127758;", "&#128270;"]
+    for i, item in enumerate(meta['summary_items']):
+        icon = bullet_icons[i] if i < len(bullet_icons) else "&#8226;"
+        summary_html += f'''<tr>
+  <td style="padding:10px 16px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#334155;line-height:1.7;">
+    <span style="font-size:15px;margin-right:6px;">{icon}</span> {item}
+  </td>
+</tr>\n'''
 
     # Alert section
     alert_section = ""
     if meta['alert_text']:
-        alert_section = f'''<tr><td style="padding:0 24px;">
-  <div style="background:#fef2f2;border-left:4px solid #dc2626;border-radius:8px;padding:16px 18px;margin-top:24px;">
-    <p style="margin:0;font-size:13px;color:#991b1b;line-height:1.6;">{meta['alert_text']}</p>
-  </div>
+        alert_section = f'''<tr><td style="padding:16px 28px 0;">
+  <table width="100%" cellpadding="0" cellspacing="0"><tr>
+    <td style="background:#fef2f2;border-left:4px solid #dc2626;border-radius:0 8px 8px 0;padding:14px 18px;">
+      <p style="margin:0;font-size:13px;color:#991b1b;line-height:1.6;"><strong style="color:#dc2626;">ALERTA:</strong> {meta['alert_text']}</p>
+    </td>
+  </tr></table>
 </td></tr>'''
 
-    # Numbers grid (2 rows of 4)
-    numbers_row1 = ""
-    numbers_row2 = ""
-    for i, num in enumerate(meta['numbers'][:8]):
-        cell = build_number_cell(num)
-        if i < 4:
-            numbers_row1 += cell
-        else:
-            numbers_row2 += cell
+    # Numbers grid — 4 per row using table cells
+    numbers_rows_html = ""
+    nums = meta['numbers'][:8]
+    for row_start in range(0, len(nums), 4):
+        row_nums = nums[row_start:row_start+4]
+        cells = ""
+        for num in row_nums:
+            color_val = '#1e293b'
+            color_change = '#64748b'
+            arrow = ''
+            if num['direction'] == 'up':
+                color_change = '#16a34a'
+                arrow = '&#9650; '
+            elif num['direction'] == 'down':
+                color_change = '#dc2626'
+                arrow = '&#9660; '
+            cells += f'''<td width="25%" style="text-align:center;padding:10px 4px;">
+        <div style="background:#f8fafc;border-radius:8px;padding:12px 6px;border:1px solid #e2e8f0;">
+          <div style="font-size:15px;font-weight:700;color:{color_val};">{num['value']}</div>
+          <div style="color:#64748b;font-size:10px;margin-top:3px;text-transform:uppercase;letter-spacing:0.5px;">{num['label']}</div>
+          <div style="color:{color_change};font-size:10px;margin-top:2px;font-weight:600;">{arrow}{num['change']}</div>
+        </div>
+      </td>'''
+        # Fill empty cells if less than 4
+        for _ in range(4 - len(row_nums)):
+            cells += '<td width="25%"></td>'
+        numbers_rows_html += f'<tr>{cells}</tr>\n'
 
-    numbers_section = f'''<tr>{numbers_row1}</tr>'''
-    if numbers_row2:
-        numbers_section += f'\n<tr><td colspan="4" style="height:8px;"></td></tr>\n<tr>{numbers_row2}</tr>'
+    # Preheader text (shows in inbox preview)
+    preheader_items = [item.get_text(strip=True) if hasattr(item, 'get_text') else re.sub(r'<[^>]+>', '', str(item)) for item in meta['summary_items'][:2]]
+    preheader = ' | '.join(preheader_items)[:150] if preheader_items else f"The Sector Ed. #{meta['edition_num']}"
 
     return f'''<!DOCTYPE html>
-<html lang="pt-BR">
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#f1f5f9;font-family:'Helvetica Neue',Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:24px 0;">
-<tr><td align="center">
-<table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+<html lang="pt-BR" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>The Sector Ed. #{meta['edition_num']}</title>
+<!--[if mso]><style>table,td {{font-family:Arial,sans-serif !important;}}</style><![endif]-->
+</head>
+<body style="margin:0;padding:0;background-color:#eef2f7;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
 
-<!-- HEADER -->
-<tr><td style="background:linear-gradient(135deg,#1a4a73 0%,#296FB1 50%,#3b82c4 100%);padding:36px 32px;text-align:center;">
-  <h1 style="margin:0;font-size:30px;color:#ffffff;font-weight:700;letter-spacing:6px;text-transform:uppercase;">THE SECTOR</h1>
-  <p style="margin:8px 0 0;font-size:11px;color:rgba(255,255,255,0.75);letter-spacing:2px;text-transform:uppercase;">Oil, Gas, Mineração &amp; Energia</p>
-  <div style="margin-top:16px;display:inline-block;">
-    <span style="display:inline-block;background:rgba(255,255,255,0.15);color:#fff;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;">Ed. #{meta['edition_num']} &middot; {meta['date_display']}</span>
-  </div>
+<!-- Preheader (hidden, shows in inbox preview) -->
+<div style="display:none;font-size:1px;color:#eef2f7;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
+  {preheader}
+</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#eef2f7;">
+<tr><td align="center" style="padding:20px 12px;">
+
+<!-- MAIN CONTAINER -->
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:12px;overflow:hidden;">
+
+<!-- HEADER — Blue Gradient -->
+<tr><td style="background:#1a4a73;background:linear-gradient(135deg,#0f3460 0%,#1a5276 40%,#296FB1 100%);padding:40px 32px 32px;text-align:center;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr><td align="center">
+      <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:34px;color:#ffffff;font-weight:700;letter-spacing:8px;text-transform:uppercase;">THE SECTOR</h1>
+    </td></tr>
+    <tr><td align="center" style="padding-top:8px;">
+      <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.65);letter-spacing:3px;text-transform:uppercase;">Oil &bull; Gas &bull; Energia &bull; Mineracao</p>
+    </td></tr>
+    <tr><td align="center" style="padding-top:18px;">
+      <table role="presentation" cellpadding="0" cellspacing="0">
+        <tr><td style="background:rgba(255,255,255,0.12);padding:6px 20px;border-radius:20px;">
+          <span style="font-size:12px;color:#ffffff;font-weight:600;">Ed. #{meta['edition_num']} &middot; {meta['date_display']}</span>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
 </td></tr>
 
 {alert_section}
 
-<!-- ACTIONS -->
-<tr><td style="padding:20px 24px;text-align:center;">
-  <a href="{edition_url}" style="display:inline-block;background:#296FB1;color:#ffffff;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:700;margin-right:10px;">&#128214; Ler no Navegador</a>
-  <a href="{listen_url}" style="display:inline-block;background:#ecfdf5;color:#047857;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:700;border:1px solid #a7f3d0;">&#127911; Ouvir Edicao</a>
-</td></tr>
-
-<!-- RESUMO -->
-<tr><td style="padding:0 24px;">
-  <h2 style="font-size:16px;color:#1e293b;margin:0 0 14px;border-bottom:2px solid #296FB1;padding-bottom:8px;">&#128203; Resumo Executivo</h2>
-  <ul style="margin:0;padding:0 0 0 18px;font-size:13px;color:#334155;line-height:1.8;">
-    {summary_html}
-  </ul>
-</td></tr>
-
-<!-- KEY NUMBERS -->
-<tr><td style="padding:24px;">
-  <h2 style="font-size:16px;color:#1e293b;margin:0 0 14px;border-bottom:2px solid #296FB1;padding-bottom:8px;">&#128202; Key Numbers</h2>
-  <table width="100%" cellpadding="0" cellspacing="8" style="font-size:12px;">
-    {numbers_section}
+<!-- ACTION BUTTONS -->
+<tr><td style="padding:24px 28px 8px;text-align:center;">
+  <table role="presentation" cellpadding="0" cellspacing="0" align="center">
+    <tr>
+      <td style="padding-right:8px;">
+        <a href="{edition_url}" style="display:inline-block;background:#296FB1;color:#ffffff;padding:12px 24px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:0.3px;">&#128214; Ler no Navegador</a>
+      </td>
+      <td style="padding-left:8px;">
+        <a href="{listen_url}" style="display:inline-block;background:#f0fdf4;color:#047857;padding:12px 24px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;border:1px solid #bbf7d0;">&#127911; Ouvir Edicao</a>
+      </td>
+    </tr>
   </table>
 </td></tr>
 
-<!-- CTA -->
-<tr><td style="padding:0 24px 24px;text-align:center;">
-  <a href="{edition_url}" style="display:inline-block;background:#296FB1;color:#ffffff;padding:14px 40px;border-radius:8px;text-decoration:none;font-size:15px;font-weight:700;">Ler Edicao Completa &#8594;</a>
+<!-- DIVIDER -->
+<tr><td style="padding:16px 28px 0;">
+  <div style="border-top:1px solid #e2e8f0;"></div>
+</td></tr>
+
+<!-- RESUMO EXECUTIVO -->
+<tr><td style="padding:20px 28px 0;">
+  <h2 style="margin:0 0 16px;font-size:16px;color:#0f172a;font-weight:700;letter-spacing:0.3px;">
+    <span style="display:inline-block;background:#296FB1;width:4px;height:16px;border-radius:2px;margin-right:10px;vertical-align:middle;">&nbsp;</span>
+    Resumo Executivo
+  </h2>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fafbfc;border-radius:8px;overflow:hidden;">
+    {summary_html}
+  </table>
+</td></tr>
+
+<!-- DIVIDER -->
+<tr><td style="padding:20px 28px 0;">
+  <div style="border-top:1px solid #e2e8f0;"></div>
+</td></tr>
+
+<!-- KEY NUMBERS -->
+<tr><td style="padding:20px 28px 0;">
+  <h2 style="margin:0 0 14px;font-size:16px;color:#0f172a;font-weight:700;letter-spacing:0.3px;">
+    <span style="display:inline-block;background:#296FB1;width:4px;height:16px;border-radius:2px;margin-right:10px;vertical-align:middle;">&nbsp;</span>
+    Cotacoes do Dia
+  </h2>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="6">
+    {numbers_rows_html}
+  </table>
+</td></tr>
+
+<!-- CTA PRINCIPAL -->
+<tr><td style="padding:28px 28px 12px;text-align:center;">
+  <table role="presentation" cellpadding="0" cellspacing="0" align="center">
+    <tr><td style="background:#296FB1;border-radius:10px;">
+      <a href="{edition_url}" style="display:inline-block;padding:16px 48px;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;letter-spacing:0.5px;">Ler Edicao Completa &rarr;</a>
+    </td></tr>
+  </table>
+</td></tr>
+
+<!-- SUBSCRIBE CTA -->
+<tr><td style="padding:0 28px 24px;text-align:center;">
+  <p style="margin:0;font-size:12px;color:#94a3b8;">Gostou? <a href="{subscribe_url}" style="color:#296FB1;text-decoration:underline;font-weight:600;">Inscreva-se</a> para receber de seg a sex.</p>
 </td></tr>
 
 <!-- FOOTER -->
-<tr><td style="background:#f8fafc;padding:24px 32px;border-top:1px solid #e2e8f0;text-align:center;">
-  <p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.6;">
-    <strong>THE SECTOR</strong><br>
-    Inteligência diária para decisores do setor energético e mineral<br>
-    <a href="https://thesector.com.br/" style="color:#296FB1;text-decoration:none;">Portal</a> &middot;
-    <a href="{listen_url}" style="color:#296FB1;text-decoration:none;">Ouvir</a>
-  </p>
-  <p style="margin:8px 0 0;font-size:10px;color:#cbd5e1;">Powered by Claude AI &middot; Dados públicos &middot; Não constitui recomendação de investimento</p>
+<tr><td style="background:#f8fafc;padding:28px 32px;border-top:1px solid #e2e8f0;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr><td align="center">
+      <p style="margin:0;font-size:18px;font-weight:700;color:#1e293b;letter-spacing:4px;font-family:Georgia,'Times New Roman',serif;">THE SECTOR</p>
+      <p style="margin:6px 0 0;font-size:11px;color:#94a3b8;letter-spacing:0.5px;">Inteligencia diaria para decisores do setor energetico e mineral</p>
+    </td></tr>
+    <tr><td align="center" style="padding-top:14px;">
+      <a href="https://thesector.com.br/" style="color:#296FB1;text-decoration:none;font-size:12px;font-weight:600;">Portal</a>
+      <span style="color:#cbd5e1;margin:0 8px;">&middot;</span>
+      <a href="{listen_url}" style="color:#296FB1;text-decoration:none;font-size:12px;font-weight:600;">Ouvir</a>
+      <span style="color:#cbd5e1;margin:0 8px;">&middot;</span>
+      <a href="https://www.linkedin.com/company/the-sector-news/" style="color:#296FB1;text-decoration:none;font-size:12px;font-weight:600;">LinkedIn</a>
+    </td></tr>
+    <tr><td align="center" style="padding-top:12px;">
+      <p style="margin:0;font-size:10px;color:#cbd5e1;line-height:1.6;">Powered by Claude AI &middot; Dados publicos &middot; Nao constitui recomendacao de investimento</p>
+    </td></tr>
+  </table>
 </td></tr>
 
 </table>
+<!-- END MAIN CONTAINER -->
+
 </td></tr>
 </table>
 </body>
@@ -287,8 +382,8 @@ def fetch_subscribers():
     return list(subscribers)
 
 
-def send_email(html_path):
-    """Send newsletter email via Gmail SMTP to all subscribers."""
+def send_email(html_path, test_mode=False):
+    """Send newsletter email via Gmail SMTP to all subscribers (or just default if test_mode)."""
     app_password = os.environ.get('GMAIL_APP_PASSWORD')
     if not app_password:
         print("ERROR: GMAIL_APP_PASSWORD environment variable not set.")
@@ -305,6 +400,8 @@ def send_email(html_path):
     meta = extract_metadata(html_path)
 
     subject = f"The Sector Ed. #{meta['edition_num']} — {meta['date_subject']}"
+    if test_mode:
+        subject = f"[TESTE] {subject}"
     email_html = build_email_html(meta)
 
     # Plain text fallback
@@ -312,8 +409,12 @@ def send_email(html_path):
     plain_text += f"Data: {meta['date_display']}\n\n"
     plain_text += f"Leia no navegador: https://thesector.com.br/editions/{meta['date_iso']}.html\n"
 
-    # Get subscribers
-    recipients = fetch_subscribers()
+    # Get recipients
+    if test_mode:
+        recipients = [DEFAULT_RECIPIENT]
+        print(f"TEST MODE: sending only to {DEFAULT_RECIPIENT}")
+    else:
+        recipients = fetch_subscribers()
 
     print(f"Subject: {subject}")
     print(f"Sending to {len(recipients)} recipient(s)...")
@@ -342,10 +443,10 @@ def send_email(html_path):
 
                     server.send_message(msg)
                     sent += 1
-                    print(f"  ✓ {recipient}")
+                    print(f"  OK {recipient}")
                 except Exception as e:
                     failed += 1
-                    print(f"  ✗ {recipient}: {e}")
+                    print(f"  FAIL {recipient}: {e}")
 
         print(f"\nDone! Sent: {sent}, Failed: {failed}")
     except smtplib.SMTPAuthenticationError:
@@ -359,11 +460,13 @@ def send_email(html_path):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python send-email.py <edition.html>")
+        print("Usage: python send-email.py <edition.html> [--test]")
         print("Example: python send-email.py editions/2026-03-10.html")
+        print("         python send-email.py editions/2026-03-10.html --test  (only sends to default recipient)")
         sys.exit(1)
 
-    send_email(sys.argv[1])
+    test_mode = '--test' in sys.argv
+    send_email(sys.argv[1], test_mode=test_mode)
 
 
 if __name__ == '__main__':
