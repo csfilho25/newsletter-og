@@ -4,7 +4,7 @@ Newsletter diária de inteligência setorial em **Oil, Gas, Mineração & Energi
 
 ## Portal
 
-**[https://csfilho25.github.io/newsletter-og/](https://csfilho25.github.io/newsletter-og/)**
+**[https://thesector.com.br/](https://thesector.com.br/)**
 
 ## Funcionalidades
 

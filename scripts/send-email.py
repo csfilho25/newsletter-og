@@ -153,7 +153,7 @@ def build_number_cell(num):
 
 def build_email_html(meta):
     """Build the full email HTML with inline styles."""
-    edition_url = f"https://csfilho25.github.io/newsletter-og/editions/{meta['date_iso']}.html"
+    edition_url = f"https://thesector.com.br/editions/{meta['date_iso']}.html"
     listen_url = f"{edition_url}#listen"
 
     # Summary list
@@ -235,7 +235,7 @@ def build_email_html(meta):
   <p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.6;">
     <strong>THE SECTOR</strong><br>
     Inteligência diária para decisores do setor energético e mineral<br>
-    <a href="https://csfilho25.github.io/newsletter-og/" style="color:#296FB1;text-decoration:none;">Portal</a> &middot;
+    <a href="https://thesector.com.br/" style="color:#296FB1;text-decoration:none;">Portal</a> &middot;
     <a href="{listen_url}" style="color:#296FB1;text-decoration:none;">Ouvir</a>
   </p>
   <p style="margin:8px 0 0;font-size:10px;color:#cbd5e1;">Powered by Claude AI &middot; Dados públicos &middot; Não constitui recomendação de investimento</p>
@@ -310,7 +310,7 @@ def send_email(html_path):
     # Plain text fallback
     plain_text = f"The Sector - Ed. #{meta['edition_num']}\n"
     plain_text += f"Data: {meta['date_display']}\n\n"
-    plain_text += f"Leia no navegador: https://csfilho25.github.io/newsletter-og/editions/{meta['date_iso']}.html\n"
+    plain_text += f"Leia no navegador: https://thesector.com.br/editions/{meta['date_iso']}.html\n"
 
     # Get subscribers
     recipients = fetch_subscribers()
