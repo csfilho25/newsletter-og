@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    min-height: 100vh;
+    background: #1a1a2e;
+    padding: 40px;
+  }
+
+  /* === LOGO 300x300 === */
+  .logo {
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, #0a1628 0%, #0d2137 40%, #0f2b4a 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .logo::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #c9953c, #e8b94a, #c9953c);
+  }
+
+  .logo::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #c9953c, #e8b94a, #c9953c);
+  }
+
+  .logo .the-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 22px;
+    letter-spacing: 14px;
+    color: #8ba4c0;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    padding-left: 14px;
+  }
+
+  .logo .sector-text {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 62px;
+    color: #ffffff;
+    letter-spacing: 2px;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .logo .sector-text .s-letter {
+    color: #e8b94a;
+  }
+
+  .logo .tagline {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 9.5px;
+    letter-spacing: 3.5px;
+    color: #6a8aab;
+    text-transform: uppercase;
+    margin-top: 12px;
+    padding-left: 3.5px;
+  }
+
+  .logo .divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #c9953c, transparent);
+    margin-top: 8px;
+    margin-bottom: 4px;
+  }
+
+  /* === BANNER LINKEDIN 1584x396 (estilo Ocean Talent) === */
+  .banner {
+    width: 1584px;
+    height: 396px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+  }
+
+  /* Left side — photo with blue overlay */
+  .banner .photo-side {
+    position: relative;
+    width: 55%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .banner .photo-side img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 55%;
+    filter: saturate(0.45) brightness(0.9);
+  }
+
+  /* Blue overlay on photo */
+  .banner .photo-side::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(10, 22, 40, 0.20) 0%,
+      rgba(13, 33, 55, 0.35) 40%,
+      rgba(13, 33, 55, 0.85) 100%
+    );
+  }
+
+  /* Right side — brand area */
+  .banner .brand-side {
+    position: relative;
+    width: 45%;
+    height: 100%;
+    background: linear-gradient(135deg, #0d2137 0%, #0f2844 40%, #0a1628 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  /* Smooth blend between photo and brand */
+  .banner .brand-side::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -80px;
+    width: 120px;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, #0d2137);
+    z-index: 3;
+  }
+
+  .banner .brand-side .the-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 22px;
+    letter-spacing: 14px;
+    color: #8ba4c0;
+    text-transform: uppercase;
+    padding-left: 14px;
+    z-index: 2;
+  }
+
+  .banner .brand-side .sector-text {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 72px;
+    color: #ffffff;
+    letter-spacing: 3px;
+    line-height: 1;
+    text-transform: uppercase;
+    z-index: 2;
+  }
+
+  .banner .brand-side .sector-text .s-letter {
+    color: #e8b94a;
+  }
+
+  .banner .brand-side .divider {
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #c9953c, transparent);
+    margin: 8px 0;
+    z-index: 2;
+  }
+
+  .banner .brand-side .subtitle {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: #6a8aab;
+    text-transform: uppercase;
+    z-index: 2;
+  }
+
+  .banner .brand-side .url {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: #e8b94a;
+    letter-spacing: 1px;
+    margin-top: 12px;
+    z-index: 2;
+  }
+
+  /* Gold line at bottom */
+  .banner::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #c9953c, #e8b94a, #c9953c);
+    z-index: 10;
+  }
+
+  .label {
+    font-family: 'Inter', sans-serif;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: -40px;
+  }
+</style>
+</head>
+<body>
+
+<div class="label">LOGO — 300x300px</div>
+<div class="logo">
+  <div class="the-text">THE</div>
+  <div class="sector-text"><span class="s-letter">S</span>ECTOR</div>
+  <div class="divider"></div>
+  <div class="tagline">Oil & Gas · Energia · Mineração</div>
+</div>
+
+<div class="label">BANNER LINKEDIN — 1584x396px</div>
+<div class="banner">
+  <div class="photo-side">
+    <img src="banner-bg.png" alt="O&G Energy Mining">
+  </div>
+  <div class="brand-side">
+    <div class="the-text">THE</div>
+    <div class="sector-text"><span class="s-letter">S</span>ECTOR</div>
+    <div class="divider"></div>
+    <div class="subtitle">Oil & Gas · Energia · Mineração</div>
+    <div class="url">thesector.com.br</div>
+  </div>
+</div>
+
+</body>
+</html>
