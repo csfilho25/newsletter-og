@@ -152,62 +152,73 @@ def build_number_cell(num):
 
 
 def build_email_html(meta):
-    """Build the full email HTML with inline styles — ocean blue professional theme."""
+    """Build the full email HTML — dark navy + gold identity matching thesector.com.br."""
     edition_url = f"https://thesector.com.br/editions/{meta['date_iso']}.html"
     listen_url = f"{edition_url}#listen"
     subscribe_url = "https://thesector.com.br/#assinar"
+    linkedin_url = "https://www.linkedin.com/company/the-sector-news/"
 
-    # Summary list with styled bullets
+    # Colors matching site identity
+    navy = "#0a1628"
+    navy_mid = "#0d2137"
+    navy_light = "#122d4a"
+    gold = "#e8b94a"
+    gold_dark = "#c9953c"
+    blue = "#296FB1"
+    blue_dark = "#1d5a94"
+
+    # Summary list with sector emoji icons
     summary_html = ""
     bullet_icons = ["&#9981;", "&#128230;", "&#128200;", "&#9889;", "&#9935;", "&#127758;", "&#128270;"]
     for i, item in enumerate(meta['summary_items']):
-        icon = bullet_icons[i] if i < len(bullet_icons) else "&#8226;"
+        icon = bullet_icons[i] if i < len(bullet_icons) else "&#9656;"
+        bg = "#f8fafc" if i % 2 == 0 else "#ffffff"
         summary_html += f'''<tr>
-  <td style="padding:10px 16px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#334155;line-height:1.7;">
-    <span style="font-size:15px;margin-right:6px;">{icon}</span> {item}
+  <td style="background:{bg};padding:12px 16px;font-size:13px;color:#334155;line-height:1.7;">
+    <span style="font-size:16px;margin-right:8px;vertical-align:middle;">{icon}</span>{item}
   </td>
 </tr>\n'''
 
     # Alert section
     alert_section = ""
     if meta['alert_text']:
-        alert_section = f'''<tr><td style="padding:16px 28px 0;">
+        alert_section = f'''<tr><td style="padding:0;">
   <table width="100%" cellpadding="0" cellspacing="0"><tr>
-    <td style="background:#fef2f2;border-left:4px solid #dc2626;border-radius:0 8px 8px 0;padding:14px 18px;">
-      <p style="margin:0;font-size:13px;color:#991b1b;line-height:1.6;"><strong style="color:#dc2626;">ALERTA:</strong> {meta['alert_text']}</p>
+    <td style="background:#fef2f2;border-left:4px solid #dc2626;padding:16px 28px;">
+      <p style="margin:0;font-size:13px;color:#991b1b;line-height:1.6;"><strong style="color:#dc2626;text-transform:uppercase;letter-spacing:0.5px;">&#9888; Alerta Geopolitico:</strong> {meta['alert_text']}</p>
     </td>
   </tr></table>
 </td></tr>'''
 
-    # Numbers grid — 4 per row using table cells
+    # Numbers grid — 4 per row, light cards
     numbers_rows_html = ""
     nums = meta['numbers'][:8]
     for row_start in range(0, len(nums), 4):
         row_nums = nums[row_start:row_start+4]
         cells = ""
         for num in row_nums:
-            color_val = '#1e293b'
+            color_val = navy
             color_change = '#64748b'
             arrow = ''
             if num['direction'] == 'up':
-                color_change = '#16a34a'
+                color_change = '#047857'
                 arrow = '&#9650; '
             elif num['direction'] == 'down':
+                color_val = '#dc2626'
                 color_change = '#dc2626'
                 arrow = '&#9660; '
-            cells += f'''<td width="25%" style="text-align:center;padding:10px 4px;">
-        <div style="background:#f8fafc;border-radius:8px;padding:12px 6px;border:1px solid #e2e8f0;">
-          <div style="font-size:15px;font-weight:700;color:{color_val};">{num['value']}</div>
-          <div style="color:#64748b;font-size:10px;margin-top:3px;text-transform:uppercase;letter-spacing:0.5px;">{num['label']}</div>
-          <div style="color:{color_change};font-size:10px;margin-top:2px;font-weight:600;">{arrow}{num['change']}</div>
+            cells += f'''<td width="25%" style="text-align:center;padding:6px 3px;">
+        <div style="background:#f7f9fc;border-radius:8px;padding:12px 4px;border:1px solid #e2e8f0;">
+          <div style="font-size:14px;font-weight:700;color:{color_val};">{num['value']}</div>
+          <div style="color:{blue};font-size:9px;margin-top:4px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">{num['label']}</div>
+          <div style="color:{color_change};font-size:10px;margin-top:3px;font-weight:600;">{arrow}{num['change']}</div>
         </div>
       </td>'''
-        # Fill empty cells if less than 4
         for _ in range(4 - len(row_nums)):
             cells += '<td width="25%"></td>'
         numbers_rows_html += f'<tr>{cells}</tr>\n'
 
-    # Preheader text (shows in inbox preview)
+    # Preheader text
     preheader_items = [item.get_text(strip=True) if hasattr(item, 'get_text') else re.sub(r'<[^>]+>', '', str(item)) for item in meta['summary_items'][:2]]
     preheader = ' | '.join(preheader_items)[:150] if preheader_items else f"The Sector Ed. #{meta['edition_num']}"
 
@@ -218,121 +229,127 @@ def build_email_html(meta):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>The Sector Ed. #{meta['edition_num']}</title>
-<!--[if mso]><style>table,td {{font-family:Arial,sans-serif !important;}}</style><![endif]-->
+<!--[if mso]><style>table,td,p,a,h1,h2,span {{font-family:Arial,sans-serif !important;}}</style><![endif]-->
 </head>
-<body style="margin:0;padding:0;background-color:#eef2f7;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+<body style="margin:0;padding:0;background-color:#e2e8f0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
 
-<!-- Preheader (hidden, shows in inbox preview) -->
-<div style="display:none;font-size:1px;color:#eef2f7;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
-  {preheader}
-</div>
+<!-- Preheader -->
+<div style="display:none;font-size:1px;color:#e2e8f0;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">{preheader}</div>
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#eef2f7;">
-<tr><td align="center" style="padding:20px 12px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#e2e8f0;">
+<tr><td align="center" style="padding:16px 10px;">
 
 <!-- MAIN CONTAINER -->
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:12px;overflow:hidden;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:10px;overflow:hidden;border:1px solid #cbd5e1;">
 
-<!-- HEADER — Blue Gradient -->
-<tr><td style="background:#1a4a73;background:linear-gradient(135deg,#0f3460 0%,#1a5276 40%,#296FB1 100%);padding:40px 32px 32px;text-align:center;">
+<!-- GOLD TOP LINE -->
+<tr><td style="background:{gold};height:3px;font-size:1px;line-height:1px;">&nbsp;</td></tr>
+
+<!-- HEADER — Dark Navy (like site nav) -->
+<tr><td style="background:{navy};padding:32px 28px 28px;text-align:center;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
     <tr><td align="center">
-      <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:34px;color:#ffffff;font-weight:700;letter-spacing:8px;text-transform:uppercase;">THE SECTOR</h1>
+      <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:32px;font-weight:700;letter-spacing:6px;text-transform:uppercase;">
+        <span style="color:#ffffff;">THE </span><span style="color:{gold};">SECTOR</span>
+      </h1>
     </td></tr>
-    <tr><td align="center" style="padding-top:8px;">
-      <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.65);letter-spacing:3px;text-transform:uppercase;">Oil &bull; Gas &bull; Energia &bull; Mineracao</p>
+    <tr><td align="center" style="padding-top:10px;">
+      <p style="margin:0;font-size:11px;color:#8ba4c0;letter-spacing:2px;text-transform:uppercase;">Oil &bull; Gas &bull; Energia &bull; Mineracao</p>
     </td></tr>
-    <tr><td align="center" style="padding-top:18px;">
-      <table role="presentation" cellpadding="0" cellspacing="0">
-        <tr><td style="background:rgba(255,255,255,0.12);padding:6px 20px;border-radius:20px;">
-          <span style="font-size:12px;color:#ffffff;font-weight:600;">Ed. #{meta['edition_num']} &middot; {meta['date_display']}</span>
-        </td></tr>
-      </table>
+    <tr><td align="center" style="padding-top:16px;">
+      <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+        <td style="background:rgba(232,185,74,0.15);border:1px solid rgba(232,185,74,0.3);padding:5px 18px;border-radius:20px;">
+          <span style="font-size:12px;color:{gold};font-weight:600;">Ed. #{meta['edition_num']} &middot; {meta['date_display']}</span>
+        </td>
+      </tr></table>
     </td></tr>
   </table>
 </td></tr>
+
+<!-- GOLD DIVIDER LINE -->
+<tr><td style="background:{gold_dark};height:2px;font-size:1px;line-height:1px;">&nbsp;</td></tr>
 
 {alert_section}
 
 <!-- ACTION BUTTONS -->
-<tr><td style="padding:24px 28px 8px;text-align:center;">
-  <table role="presentation" cellpadding="0" cellspacing="0" align="center">
-    <tr>
-      <td style="padding-right:8px;">
-        <a href="{edition_url}" style="display:inline-block;background:#296FB1;color:#ffffff;padding:12px 24px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:0.3px;">&#128214; Ler no Navegador</a>
-      </td>
-      <td style="padding-left:8px;">
-        <a href="{listen_url}" style="display:inline-block;background:#f0fdf4;color:#047857;padding:12px 24px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;border:1px solid #bbf7d0;">&#127911; Ouvir Edicao</a>
-      </td>
-    </tr>
+<tr><td style="background:#ffffff;padding:22px 28px 18px;text-align:center;">
+  <table role="presentation" cellpadding="0" cellspacing="0" align="center"><tr>
+    <td style="padding-right:6px;">
+      <a href="{edition_url}" style="display:inline-block;background:{blue};color:#ffffff;padding:11px 22px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:700;">&#128214; Ler no Navegador</a>
+    </td>
+    <td style="padding-left:6px;">
+      <a href="{listen_url}" style="display:inline-block;background:#ffffff;color:{blue};padding:10px 22px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:700;border:2px solid {blue};">&#127911; Ouvir Edicao</a>
+    </td>
+  </tr></table>
+</td></tr>
+
+<!-- SECTION: RESUMO EXECUTIVO -->
+<tr><td style="background:#ffffff;padding:0 28px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr><td style="border-bottom:2px solid {gold};padding-bottom:8px;">
+      <h2 style="margin:0;font-size:15px;color:{navy};font-weight:700;letter-spacing:0.3px;">
+        <span style="color:{gold};margin-right:6px;">&#9656;</span> Resumo Executivo
+      </h2>
+    </td></tr>
   </table>
 </td></tr>
-
-<!-- DIVIDER -->
-<tr><td style="padding:16px 28px 0;">
-  <div style="border-top:1px solid #e2e8f0;"></div>
-</td></tr>
-
-<!-- RESUMO EXECUTIVO -->
-<tr><td style="padding:20px 28px 0;">
-  <h2 style="margin:0 0 16px;font-size:16px;color:#0f172a;font-weight:700;letter-spacing:0.3px;">
-    <span style="display:inline-block;background:#296FB1;width:4px;height:16px;border-radius:2px;margin-right:10px;vertical-align:middle;">&nbsp;</span>
-    Resumo Executivo
-  </h2>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fafbfc;border-radius:8px;overflow:hidden;">
+<tr><td style="background:#ffffff;padding:12px 28px 20px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-radius:8px;overflow:hidden;border:1px solid #e2e8f0;">
     {summary_html}
   </table>
 </td></tr>
 
-<!-- DIVIDER -->
-<tr><td style="padding:20px 28px 0;">
-  <div style="border-top:1px solid #e2e8f0;"></div>
+<!-- SECTION: COTACOES -->
+<tr><td style="background:#ffffff;padding:0 28px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr><td style="border-bottom:2px solid {gold};padding-bottom:8px;">
+      <h2 style="margin:0;font-size:15px;color:{navy};font-weight:700;letter-spacing:0.3px;">
+        <span style="color:{gold};margin-right:6px;">&#9656;</span> Cotacoes do Dia
+      </h2>
+    </td></tr>
+  </table>
 </td></tr>
-
-<!-- KEY NUMBERS -->
-<tr><td style="padding:20px 28px 0;">
-  <h2 style="margin:0 0 14px;font-size:16px;color:#0f172a;font-weight:700;letter-spacing:0.3px;">
-    <span style="display:inline-block;background:#296FB1;width:4px;height:16px;border-radius:2px;margin-right:10px;vertical-align:middle;">&nbsp;</span>
-    Cotacoes do Dia
-  </h2>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="6">
+<tr><td style="background:#ffffff;padding:12px 24px 20px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="4">
     {numbers_rows_html}
   </table>
 </td></tr>
 
 <!-- CTA PRINCIPAL -->
-<tr><td style="padding:28px 28px 12px;text-align:center;">
-  <table role="presentation" cellpadding="0" cellspacing="0" align="center">
-    <tr><td style="background:#296FB1;border-radius:10px;">
-      <a href="{edition_url}" style="display:inline-block;padding:16px 48px;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;letter-spacing:0.5px;">Ler Edicao Completa &rarr;</a>
-    </td></tr>
-  </table>
+<tr><td style="background:#ffffff;padding:8px 28px 20px;text-align:center;">
+  <table role="presentation" cellpadding="0" cellspacing="0" align="center"><tr>
+    <td style="background:{blue};border-radius:8px;">
+      <a href="{edition_url}" style="display:inline-block;padding:14px 44px;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;letter-spacing:0.3px;">Ler Edicao Completa &rarr;</a>
+    </td>
+  </tr></table>
+  <p style="margin:12px 0 0;font-size:12px;color:#94a3b8;">Gostou? <a href="{subscribe_url}" style="color:{blue};text-decoration:underline;font-weight:600;">Inscreva-se</a> para receber de seg a sex.</p>
 </td></tr>
 
-<!-- SUBSCRIBE CTA -->
-<tr><td style="padding:0 28px 24px;text-align:center;">
-  <p style="margin:0;font-size:12px;color:#94a3b8;">Gostou? <a href="{subscribe_url}" style="color:#296FB1;text-decoration:underline;font-weight:600;">Inscreva-se</a> para receber de seg a sex.</p>
-</td></tr>
-
-<!-- FOOTER -->
-<tr><td style="background:#f8fafc;padding:28px 32px;border-top:1px solid #e2e8f0;">
+<!-- FOOTER — Dark Navy (like site footer) -->
+<tr><td style="background:{navy};padding:28px 28px 20px;text-align:center;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
     <tr><td align="center">
-      <p style="margin:0;font-size:18px;font-weight:700;color:#1e293b;letter-spacing:4px;font-family:Georgia,'Times New Roman',serif;">THE SECTOR</p>
-      <p style="margin:6px 0 0;font-size:11px;color:#94a3b8;letter-spacing:0.5px;">Inteligencia diaria para decisores do setor energetico e mineral</p>
+      <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:700;letter-spacing:4px;text-transform:uppercase;">
+        <span style="color:#ffffff;">THE </span><span style="color:{gold};">SECTOR</span>
+      </p>
+      <p style="margin:8px 0 0;font-size:11px;color:#8ba4c0;letter-spacing:0.3px;">Inteligencia diaria para decisores do setor energetico e mineral</p>
+      <p style="margin:4px 0 0;font-size:11px;color:#8ba4c0;">Edicao diaria seg-sex</p>
+    </td></tr>
+    <tr><td align="center" style="padding-top:16px;">
+      <a href="https://thesector.com.br/" style="color:{gold};text-decoration:none;font-size:12px;font-weight:600;">Portal</a>
+      <span style="color:#334155;margin:0 8px;">&middot;</span>
+      <a href="{listen_url}" style="color:{gold};text-decoration:none;font-size:12px;font-weight:600;">Ouvir</a>
+      <span style="color:#334155;margin:0 8px;">&middot;</span>
+      <a href="{linkedin_url}" style="color:{gold};text-decoration:none;font-size:12px;font-weight:600;">LinkedIn</a>
     </td></tr>
     <tr><td align="center" style="padding-top:14px;">
-      <a href="https://thesector.com.br/" style="color:#296FB1;text-decoration:none;font-size:12px;font-weight:600;">Portal</a>
-      <span style="color:#cbd5e1;margin:0 8px;">&middot;</span>
-      <a href="{listen_url}" style="color:#296FB1;text-decoration:none;font-size:12px;font-weight:600;">Ouvir</a>
-      <span style="color:#cbd5e1;margin:0 8px;">&middot;</span>
-      <a href="https://www.linkedin.com/company/the-sector-news/" style="color:#296FB1;text-decoration:none;font-size:12px;font-weight:600;">LinkedIn</a>
-    </td></tr>
-    <tr><td align="center" style="padding-top:12px;">
-      <p style="margin:0;font-size:10px;color:#cbd5e1;line-height:1.6;">Powered by Claude AI &middot; Dados publicos &middot; Nao constitui recomendacao de investimento</p>
+      <p style="margin:0;font-size:9px;color:#4a6380;line-height:1.5;">Powered by Claude AI &middot; Dados publicos &middot; Nao constitui recomendacao de investimento</p>
     </td></tr>
   </table>
 </td></tr>
+
+<!-- GOLD BOTTOM LINE -->
+<tr><td style="background:{gold};height:3px;font-size:1px;line-height:1px;">&nbsp;</td></tr>
 
 </table>
 <!-- END MAIN CONTAINER -->
@@ -435,7 +452,6 @@ def send_email(html_path, test_mode=False):
                     msg['Subject'] = Header(subject, 'utf-8')
                     msg['From'] = "The Sector <contato@thesector.com.br>"
                     msg['Reply-To'] = 'contato@thesector.com.br'
-                    msg['Sender'] = GMAIL_USER
                     msg['To'] = recipient
 
                     msg.attach(MIMEText(plain_text, 'plain', 'utf-8'))
