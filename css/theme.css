@@ -31,6 +31,11 @@
   --text-bright: #0f172a;
   --text-muted: #94a3b8;
 
+  /* Gold accent (logo identity) */
+  --gold: #e8b94a;
+  --gold-dark: #c9953c;
+  --nav-bg: #0a1628;
+
   /* Sector accents */
   --oil: #296FB1;
   --mining: #b45309;
