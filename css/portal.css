@@ -382,7 +382,7 @@
 
 /* Portal Footer — Dark blue + gold identity */
 .portal-footer {
-  background: linear-gradient(90deg, #1a3d5c 0%, #153252 50%, #112845 100%);
+  background: linear-gradient(90deg, #122d4a 0%, #0d2137 50%, #0a1628 100%);
   padding: 36px 20px;
   border-top: 2px solid var(--gold-dark);
   text-align: center;
