@@ -25,7 +25,7 @@ except ImportError:
     sys.exit(1)
 
 # Config
-GMAIL_USER = "carlos.alberto.dias.souza@gmail.com"
+GMAIL_USER = "thesectornews@gmail.com"
 DEFAULT_RECIPIENT = "cs_filho@icloud.com"
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
@@ -457,7 +457,8 @@ def send_email(html_path, test_mode=False):
                     msg.attach(MIMEText(plain_text, 'plain', 'utf-8'))
                     msg.attach(MIMEText(email_html, 'html', 'utf-8'))
 
-                    server.send_message(msg)
+                    # Envelope sender = Gmail (SPF/DKIM pass), From header = custom domain (display)
+                    server.sendmail(GMAIL_USER, recipient, msg.as_string())
                     sent += 1
                     print(f"  OK {recipient}")
                 except Exception as e:
