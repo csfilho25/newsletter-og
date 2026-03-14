@@ -128,12 +128,34 @@
   <div class="subscribe-card">
     <h2>Receba no seu e-mail</h2>
     <p>Edicao diaria, segunda a sexta, direto na sua caixa de entrada.</p>
-    <div style="margin-top:24px;">
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSeUaLGdgZc-oFP6d4fuT61I4hr-hy4Jbo8SQ2uoLYKiJfTTlg/viewform" id="subscribe-btn" class="btn-primary" target="_blank" style="font-size:1em; padding:14px 36px;">Assinar Newsletter &#8594;</a>
-    </div>
-    <p style="font-size:0.78em; color:var(--text-dim); margin-top:14px;">Gratuita. Sem spam. Cancele quando quiser.</p>
+    <form class="subscribe-form" id="subscribe-form"
+          action="https://docs.google.com/forms/d/e/1FAIpQLSeUaLGdgZc-oFP6d4fuT61I4hr-hy4Jbo8SQ2uoLYKiJfTTlg/formResponse"
+          target="subscribe-iframe" method="POST" onsubmit="handleSubscribe(event)">
+      <input type="email" name="entry.1602349099" id="subscribe-email" placeholder="seu@email.com" required>
+      <button type="submit" id="subscribe-btn">Assinar</button>
+    </form>
+    <p id="subscribe-msg" style="font-size:0.78em; color:var(--text-dim); margin-top:14px;">Gratuita. Sem spam. Cancele quando quiser.</p>
+    <iframe name="subscribe-iframe" style="display:none;"></iframe>
   </div>
 </section>
+<script>
+function handleSubscribe(e) {
+  var email = document.getElementById('subscribe-email');
+  var btn = document.getElementById('subscribe-btn');
+  var msg = document.getElementById('subscribe-msg');
+  if (!email.value) return;
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+  setTimeout(function() {
+    email.style.display = 'none';
+    btn.style.display = 'none';
+    msg.style.color = 'var(--up)';
+    msg.style.fontSize = '0.95em';
+    msg.style.fontWeight = '600';
+    msg.textContent = 'Inscricao confirmada! Voce recebera o The Sector de seg a sex as 8h.';
+  }, 1500);
+}
+</script>
 
 <!-- FOOTER -->
 <footer class="portal-footer">
