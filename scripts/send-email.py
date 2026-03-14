@@ -8,11 +8,15 @@ Requires: GMAIL_APP_PASSWORD environment variable set.
 import sys
 import os
 import re
+import csv
+import io
 import smtplib
 from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.header import Header
+from urllib.request import urlopen
+from urllib.error import URLError
 
 try:
     from bs4 import BeautifulSoup
@@ -22,9 +26,12 @@ except ImportError:
 
 # Config
 GMAIL_USER = "carlos.alberto.dias.souza@gmail.com"
-RECIPIENT = "cs_filho@icloud.com"
+DEFAULT_RECIPIENT = "cs_filho@icloud.com"
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
+
+# Google Sheets CSV URL (published to web)
+SUBSCRIBERS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRZHXRXZQqm4CkFTF63VNQrzXA2Hmt--l3mKjxgsbYRVL7k5dRTC-0FngTx62BW21R7wFadHxr6mOpV/pub?output=csv"
 
 # Portuguese month names
 MONTHS_PT = {
@@ -241,8 +248,47 @@ def build_email_html(meta):
 </html>'''
 
 
+def fetch_subscribers():
+    """Fetch subscriber emails from Google Sheets CSV."""
+    subscribers = set()
+    # Always include the default recipient
+    subscribers.add(DEFAULT_RECIPIENT)
+
+    try:
+        print(f"Fetching subscribers from Google Sheets...")
+        response = urlopen(SUBSCRIBERS_CSV_URL, timeout=15)
+        data = response.read().decode('utf-8')
+        reader = csv.reader(io.StringIO(data))
+        header = next(reader, None)  # Skip header row
+
+        # Find email column (usually column B = index 1, "Seu melhor email")
+        email_col = 1  # default: second column
+        if header:
+            for i, col in enumerate(header):
+                if 'email' in col.lower() or 'e-mail' in col.lower():
+                    email_col = i
+                    break
+
+        for row in reader:
+            if len(row) > email_col:
+                email = row[email_col].strip().lower()
+                # Basic email validation
+                if email and '@' in email and '.' in email.split('@')[-1]:
+                    subscribers.add(email)
+
+        print(f"  Found {len(subscribers)} subscriber(s) (including default)")
+    except URLError as e:
+        print(f"  WARNING: Could not fetch subscribers: {e}")
+        print(f"  Sending only to default: {DEFAULT_RECIPIENT}")
+    except Exception as e:
+        print(f"  WARNING: Error reading subscriber list: {e}")
+        print(f"  Sending only to default: {DEFAULT_RECIPIENT}")
+
+    return list(subscribers)
+
+
 def send_email(html_path):
-    """Send newsletter email via Gmail SMTP."""
+    """Send newsletter email via Gmail SMTP to all subscribers."""
     app_password = os.environ.get('GMAIL_APP_PASSWORD')
     if not app_password:
         print("ERROR: GMAIL_APP_PASSWORD environment variable not set.")
@@ -261,40 +307,53 @@ def send_email(html_path):
     subject = f"The Sector Ed. #{meta['edition_num']} — {meta['date_subject']}"
     email_html = build_email_html(meta)
 
-    # Build message
-    msg = MIMEMultipart('alternative')
-    msg['Subject'] = Header(subject, 'utf-8')
-    msg['From'] = "The Sector <contato@thesector.com.br>"
-    msg['Reply-To'] = 'contato@thesector.com.br'
-    msg['Sender'] = GMAIL_USER
-    msg['To'] = RECIPIENT
-
     # Plain text fallback
     plain_text = f"The Sector - Ed. #{meta['edition_num']}\n"
     plain_text += f"Data: {meta['date_display']}\n\n"
     plain_text += f"Leia no navegador: https://csfilho25.github.io/newsletter-og/editions/{meta['date_iso']}.html\n"
 
-    msg.attach(MIMEText(plain_text, 'plain', 'utf-8'))
-    msg.attach(MIMEText(email_html, 'html', 'utf-8'))
+    # Get subscribers
+    recipients = fetch_subscribers()
 
-    # Send
-    print(f"Sending to: {RECIPIENT}")
     print(f"Subject: {subject}")
+    print(f"Sending to {len(recipients)} recipient(s)...")
 
+    # Send individually (BCC-style, each gets their own copy)
     try:
         with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
             server.ehlo()
             server.starttls()
             server.ehlo()
             server.login(GMAIL_USER, app_password)
-            server.send_message(msg)
-        print("Email sent successfully!")
+
+            sent = 0
+            failed = 0
+            for recipient in recipients:
+                try:
+                    msg = MIMEMultipart('alternative')
+                    msg['Subject'] = Header(subject, 'utf-8')
+                    msg['From'] = "The Sector <contato@thesector.com.br>"
+                    msg['Reply-To'] = 'contato@thesector.com.br'
+                    msg['Sender'] = GMAIL_USER
+                    msg['To'] = recipient
+
+                    msg.attach(MIMEText(plain_text, 'plain', 'utf-8'))
+                    msg.attach(MIMEText(email_html, 'html', 'utf-8'))
+
+                    server.send_message(msg)
+                    sent += 1
+                    print(f"  ✓ {recipient}")
+                except Exception as e:
+                    failed += 1
+                    print(f"  ✗ {recipient}: {e}")
+
+        print(f"\nDone! Sent: {sent}, Failed: {failed}")
     except smtplib.SMTPAuthenticationError:
         print("ERROR: Authentication failed. Check your GMAIL_APP_PASSWORD.")
         print("Get a new App Password at: https://myaccount.google.com/apppasswords")
         sys.exit(1)
     except Exception as e:
-        print(f"ERROR sending email: {e}")
+        print(f"ERROR connecting to SMTP: {e}")
         sys.exit(1)
 
 
